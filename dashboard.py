@@ -423,3 +423,4 @@ elif page == "Confirmation Reports":
     st.info("Monthly reporting section coming next.")
 
 elif page == "Sit Confirmed":
+    st.title("📊 Sit Confirmed")
