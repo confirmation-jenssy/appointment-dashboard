@@ -289,12 +289,10 @@ elif page == "Confirmation Reports":
         today = datetime.now().strftime("%m/%d/%Y")
 
         total_leads = (
-            tommy_leads +
-            elite_leads +
-            universal_leads +
-            mccormick_leads +
-            safegreen_leads +
-            nova_leads
+            confirmed +
+            rejected +
+            cancelled +
+            reschedule
         )
 
         reports["daily"][today] = {
