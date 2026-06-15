@@ -202,6 +202,18 @@ def load_monday_data():
         if dt.date() in [today_date, tomorrow_date]:
             filtered_items.append(item)
 
+    confirmed = 0
+    rejected = 0
+    cancelled = 0
+    reschedule = 0
+
+    tommy_leads = 0
+    elite_leads = 0
+    universal_leads = 0
+
+    mccormick_leads = 0
+    safegreen_leads = 0
+    nova_leads = 0
 
     for item in filtered_items:
 
@@ -226,6 +238,38 @@ def load_monday_data():
 
         source_upper = source.upper()
         qa_upper = qa_notes.upper()
+
+        if disburse.upper() == "TOMMY":
+            confirmed += 1
+
+            if is_mccormick:
+                mccormick_leads += 1
+
+            elif is_nova:
+                nova_leads += 1
+
+            elif is_safegreen:
+                safegreen_leads += 1
+
+            else:
+                tommy_leads += 1
+
+        elif disburse.upper() == "ELITE":
+            confirmed += 1
+            elite_leads += 1
+
+        elif disburse.upper() == "UNIVERSAL":
+            confirmed += 1
+            universal_leads += 1
+
+        elif disburse.upper() == "REJECTED":
+            rejected += 1
+
+        elif disburse.upper() == "CANCELED":
+            cancelled += 1
+
+        elif disburse.upper() == "RESCHEDULE":
+            reschedule += 1
 
         is_mccormick = "MCCORMICK" in source_upper
 
@@ -336,6 +380,16 @@ def load_monday_data():
     print()            
     print(f"Runtime: {time.time() - start_time:.2f} seconds")
 
+    print("========== FINAL COUNTS ==========")
+    print("confirmed =", confirmed)
+    print("rejected =", rejected)
+    print("cancelled =", cancelled)
+    print("reschedule =", reschedule)
+    print("tommy_leads =", tommy_leads)
+    print("elite_leads =", elite_leads)
+    print("universal_leads =", universal_leads)
+    print("==================================")
+
     return (
         today_counts,
         tomorrow_counts,
@@ -346,5 +400,15 @@ def load_monday_data():
         safegreen_today,
         safegreen_tomorrow,
         nova_today,
-        nova_tomorrow
+        nova_tomorrow,
+        confirmed,
+        rejected,
+        cancelled,
+        reschedule,
+         tommy_leads,
+        elite_leads,
+        universal_leads,
+        mccormick_leads,
+        safegreen_leads,
+        nova_leads
     )
