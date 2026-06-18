@@ -53,20 +53,42 @@ def build_report(items):
         if dt.date() != today:
             continue
 
-        status = values.get(
+        raw_status = values.get(
             COLUMN_IDS["status"],
             ""
-        ).upper().strip()
-
+        )
+        
+        raw_same_day = values.get(
+            COLUMN_IDS["same_day"],
+            ""
+        )
+        
+        status = raw_status.upper().strip()
+        
         source = values.get(
             COLUMN_IDS["source"],
             ""
         ).upper()
-
-        same_day_status = values.get(
-            COLUMN_IDS["same_day"],
-            ""
-        ).upper().strip()
+        
+        same_day_status = raw_same_day.upper().strip()
+        
+        print(
+            item["name"],
+            "| STATUS =",
+            repr(raw_status)
+        )
+        
+        print(
+            item["name"],
+            "| SAME DAY =",
+            repr(raw_same_day)
+        )
+        
+        print(
+            item["name"],
+            "| SOURCE =",
+            repr(source)
+        )
 
         if status in CONFIRMED_STATUSES:
 
