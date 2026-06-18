@@ -310,19 +310,11 @@ def load_monday_data():
 
                 no_answer += 1
 
-                if (
-                    same_day_status.upper() == "SAME DAY"
-                    and disburse.upper() in ["TOMMY", "ELITE", "UNIVERSAL"]
-                ):
-                
-                    same_day += 1
-
-                if same_day_status:
-                    print(
-                        item["name"],
-                        "| SAME DAY =", repr(same_day_status),
-                        "| STATUS =", repr(disburse)
-                    )
+            if (
+                same_day_status.upper() == "SAME DAY"
+                and disburse.upper() in ["TOMMY", "ELITE", "UNIVERSAL"]
+            ):
+                same_day += 1
 
             if not meeting_date:
                 continue
