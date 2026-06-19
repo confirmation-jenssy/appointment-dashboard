@@ -271,7 +271,7 @@ def build_disburse_report(items, client_name):
 
 def build_appointment_counts(items):
 
-    {
+    counts = {
         "tommy_elite": {
             "total": 25,
             "worked": 18,
@@ -288,9 +288,7 @@ def build_appointment_counts(items):
                 "4-6": 3,
                 "7-8": 1
             }
-        },
-    
-        "mccormick": {...},
-        "nova": {...},
-        "universal": {...}
+        }
     }
+
+    return counts
