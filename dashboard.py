@@ -15,6 +15,19 @@ st.set_page_config(
 
 items = get_monday_items()
 
+for item in items[:20]:
+
+    values = {}
+
+    for col in item["column_values"]:
+        values[col["id"]] = col["text"]
+
+    st.write(
+        item["name"],
+        "| Status =",
+        values.get("status", "")
+    )
+
 st.write("Items Returned:", len(items))
 
 page = st.sidebar.selectbox(
