@@ -20,16 +20,6 @@ st.set_page_config(
 # --- CHANGE HERE: Fetch data when needed (and rely on the caching in monday_api.py) ---
 items = get_monday_items() 
 
-if items:
-    st.success("✅ Successfully fetched items from Monday!")
-    st.subheader("🔍 Raw Data Inspection (First Item)")
-    first_item = items[0]
-
-# Check if items were successfully loaded before running the app logic
-if not items and st.session_state.get('page') != "Confirmation":
-    st.warning("Cannot load reports because no data was retrieved from Monday. Please check API keys or board status.")
-
-
 page = st.sidebar.selectbox(
     "Select Page",
     [
