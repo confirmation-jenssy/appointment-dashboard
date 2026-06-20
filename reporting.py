@@ -396,4 +396,15 @@ def build_appointment_counts(items):
         "tomorrow": str(tomorrow)
     }
 
+    counts["debug"] = {
+        "today": str(today),
+        "tomorrow": str(tomorrow),
+        "today_count": (
+            counts["tommy_elite"]["total"]
+            + counts["mccormick"]["total"]
+            + counts["nova"]["total"]
+            + counts["universal"]["total"]
+        )
+    }
+    
     return counts
