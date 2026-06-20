@@ -132,6 +132,8 @@ if page == "Appointment Counts":
 
     counts = build_appointment_counts(items)
 
+    st.write(counts)
+
     st.write("LA Today =", today)
     st.write("LA Tomorrow =", tomorrow)
     
@@ -164,5 +166,5 @@ if page == "Appointment Counts":
     st.write("Appointments on Today =", today_found)
     st.write("Appointments on Tomorrow =", tomorrow_found)
     
-        st.write(counts)
+        
             
