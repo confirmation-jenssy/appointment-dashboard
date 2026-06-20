@@ -27,13 +27,10 @@ def parse_meeting_date(date_string):
 
     for fmt in date_formats:
         try:
-            dt = datetime.strptime(date_string, fmt)
-
-            # assume UTC ONLY if no timezone info exists
-            dt = dt.replace(tzinfo=timezone.utc)
-
-            return dt.astimezone(LA)
-
+            return datetime.strptime(
+                date_string,
+                fmt
+            )
         except ValueError:
             continue
 
