@@ -330,25 +330,11 @@ def build_appointment_counts(items):
         for col in item["column_values"]:
             values[col["id"]] = col["text"]
 
-        source = values.get(
-            COLUMN_IDS["source"],
-            ""
-        ).upper()
+        source = values.get(COLUMN_IDS["source"], "").upper()
+        status = values.get(COLUMN_IDS["status"], "").upper().strip()
+        confirmation = values.get(COLUMN_IDS["confirmation"], "").strip()
 
-        status = values.get(
-            COLUMN_IDS["status"],
-            ""
-        ).upper().strip()
-
-        confirmation = values.get(
-            COLUMN_IDS["confirmation"],
-            ""
-        ).strip()
-
-        meeting_date = values.get(
-            COLUMN_IDS["meeting_date"],
-            ""
-        )
+        meeting_date = values.get(COLUMN_IDS["meeting_date"], "")
 
         dt = parse_meeting_date(meeting_date)
 
@@ -359,42 +345,38 @@ def build_appointment_counts(items):
 
         if "TOMMY" in source:
             campaign = "tommy_elite"
-
         elif "MCCORMICK" in source:
             campaign = "mccormick"
-
         elif "NOVA" in source:
             campaign = "nova"
-
         elif status == "UNIVERSAL":
             campaign = "universal"
 
         if campaign is None:
             continue
 
-    appointment_day = dt.date()
+        appointment_day = dt.date()
 
-    # TODAY DAY
-    if appointment_day == today:
+        # TODAY DAY
+        if appointment_day == today:
 
-        counts[campaign]["total"] += 1
+            counts[campaign]["total"] += 1
 
-        if confirmation != "":
-            counts[campaign]["worked"] += 1
+            if confirmation != "":
+                counts[campaign]["worked"] += 1
+            else:
+                add_time_bucket(
+                    counts[campaign]["today"],
+                    dt.hour
+                )
+        # TOMORRROW COUNTS
+        elif appointment_day == tomorrow:
 
-        else:
-            add_time_bucket(
-                counts[campaign]["today"],
-                dt.hour
-            )
-    # TOMORRROW COUNTS
-    elif appointment_day == tomorrow:
-
-        if confirmation == "":
-            add_time_bucket(
-                counts[campaign]["tomorrow"],
-                dt.hour
-            )
+            if confirmation == "":
+                add_time_bucket(
+                    counts[campaign]["tomorrow"],
+                    dt.hour
+                )
     
     for campaign in counts.values():
 
