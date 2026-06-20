@@ -133,34 +133,4 @@ if page == "Appointment Counts":
     counts = build_appointment_counts(items)
     
     st.write(counts)
-
-    st.write("LA Today =", datetime.now(
-        ZoneInfo("America/Los_Angeles")
-    ).date())
-    
-    today_hits = 0
-
-    for item in items:
-    
-        values = {}
-    
-        for col in item["column_values"]:
-            values[col["id"]] = col["text"]
-    
-        meeting_date = values.get(
-            "date_mkr2q53p",
-            ""
-        )
-    
-        if meeting_date.startswith("2026-06-19"):
-            today_hits += 1
-    
-            st.write({
-                "source": values.get("text_mkr22s20", ""),
-                "status": values.get("status", ""),
-                "confirmation": values.get("color_mkr2rpkj", ""),
-                "meeting_date": meeting_date
-            })
-    
-    st.write("TOTAL JUNE 19 APPOINTMENTS =", today_hits)
             
