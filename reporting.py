@@ -402,4 +402,9 @@ def build_appointment_counts(items):
             - campaign["worked"]
         )
 
+    counts["debug"] = {
+        "today": str(today),
+        "tomorrow": str(tomorrow)
+    }
+
     return counts
