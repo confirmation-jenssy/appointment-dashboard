@@ -1,7 +1,7 @@
 # ==============================
 # FILE: reporting (1).py 
 # ==============================
-
+from zoneinfo import ZoneInfo
 from datetime import datetime, timedelta
 import time # Added for better handling of parsing attempts
 
@@ -57,7 +57,9 @@ def build_report(items):
         "total_leads": 0
     }
 
-    today = datetime.now().date()
+    today = datetime.now(
+        ZoneInfo("America/Los_Angeles")
+    ).date()
 
     for item in items:
 
@@ -203,7 +205,9 @@ def build_disburse_report(items, client_name):
         "conversion": 0
     }
 
-    today = datetime.now().date()
+    today = datetime.now(
+        ZoneInfo("America/Los_Angeles")
+    ).date()
 
     for item in items:
 
@@ -305,7 +309,9 @@ def add_time_bucket(bucket, hour):
 
 def build_appointment_counts(items):
 
-    today = datetime.now().date()
+    today = datetime.now(
+        ZoneInfo("America/Los_Angeles")
+    ).date()
     tomorrow = today + timedelta(days=1)
 
     counts = {
