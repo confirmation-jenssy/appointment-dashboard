@@ -135,26 +135,17 @@ if page == "Appointment Counts":
     ).date())
     
     for item in items[:30]:
-    
+
         values = {}
     
         for col in item["column_values"]:
             values[col["id"]] = col["text"]
     
-        meeting_date = values.get(
-            COLUMN_IDS["meeting_date"],
-            ""
-        )
-    
-        dt = parse_meeting_date(meeting_date)
-    
-        if dt:
-            st.write(
-                "Meeting:",
-                meeting_date,
-                "| Parsed:",
-                dt.date()
-            )
+        st.write({
+            "source": values.get("text_mkr22s20", ""),
+            "confirmation": values.get("color_mkr2rpkj", ""),
+            "meeting_date": values.get("date_mkr2q53p", "")
+        })
         
         
             
