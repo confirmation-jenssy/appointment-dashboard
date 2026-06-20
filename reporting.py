@@ -390,7 +390,7 @@ def build_appointment_counts(items):
 
         if confirmation == "":
             add_time_bucket(
-                counts[campaign]{"tomorrow"],
+                counts[campaign]["tomorrow"],
                 dt.hour
             )
     
