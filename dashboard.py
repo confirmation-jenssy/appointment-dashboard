@@ -186,5 +186,5 @@ if page == "Appointment Counts":
         counts["socal"]["tomorrow"]
     )
     
-    st.write(counts)
+
             
