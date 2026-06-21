@@ -297,7 +297,7 @@ if page == "Appointment Counts":
     
         return "🔴 OVERBOOKED"
 
-        def get_slot_status(booked, target):
+    def get_slot_status(booked, target):
 
         if booked == 0:
             return "🔴"
