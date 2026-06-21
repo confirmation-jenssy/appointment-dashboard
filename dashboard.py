@@ -148,12 +148,12 @@ if page == "Appointment Counts":
             value=2
         )
 
-with c3:
-    socal_reps = st.number_input(
-        "CA Reps",
-        min_value=0,
-        value=2
-    )
+    with c3:
+        socal_reps = st.number_input(
+            "CA Reps",
+            min_value=0,
+            value=2
+        )
 
     st.subheader("Capacity")
 
