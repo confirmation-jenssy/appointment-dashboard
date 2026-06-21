@@ -24,7 +24,7 @@ page = st.sidebar.selectbox(
     "Select Page",
     [
         "End of Day Report",
-        "End of Day Export"
+        "End of Day Export",
         "Total Appointment"
     ]
 )
