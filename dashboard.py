@@ -18,10 +18,6 @@ from reporting import (
     build_nova_report,
     build_appointment_counts
 )
-st.write(
-    st.secrets["gcp_service_account"]["client_email"]
-)
-
 # --- CHANGE HERE: Fetch data when needed (and rely on the caching in monday_api.py) ---
 items = get_monday_items() 
 
@@ -1259,12 +1255,16 @@ if page == "End of Day Export":
                 "%Y-%m-%d %H:%M"
             )
         
-               if not (
-                    datetime(2026, 6, 21)
+               if (
+                    datetime(2026, 6, 15)
                     <= appt_dt
-                    <= datetime(2026, 6, 21, 23, 59)
+                    <= datetime(2026, 6, 19, 23, 59)
                 ):
-                    continue
+                    st.write(
+                        item["name"],
+                        status,
+                        appointment_date
+                    )
             
             row = [
                 appointment_date,
