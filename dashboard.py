@@ -263,65 +263,14 @@ if page == "Appointment Counts":
     
     with left_col:
 
+        st.subheader("Today")
+
     or_col, wa_col, ca_col = st.columns(3)
 
     with or_col:
 
-    st.markdown("### OR")
-
-        st.subheader("Today")
+        st.markdown("### OR")
     
-        c1, c2, c3, c4 = st.columns(4)
-    
-        c1.metric("OR", today_or)
-        c2.metric("WA", today_wa)
-        c3.metric("CA", today_ca)
-        c4.metric("TOTAL", today_total)
-    
-    with right_col:
-
-        st.subheader("Tomorrow")
-    
-        c1, c2, c3, c4 = st.columns(4)
-    
-        c1.metric("OR", tomorrow_or)
-        c2.metric("WA", tomorrow_wa)
-        c3.metric("CA", tomorrow_ca)
-        c4.metric("TOTAL", tomorrow_total)
-
-    st.divider()
-
-    st.info(
-        "🔴 Empty    |    🟡 Needs Leads    |    🟢 Goal Met    |    🔵 Extra Leads"
-    )
-    
-    left_col, right_col = st.columns(2)
-
-    def get_status(booked, capacity):
-
-        if booked < (capacity * 0.75):
-            return "🟡 NEED LEADS"
-    
-        elif booked <= capacity:
-            return "🟢 FULL"
-    
-        return "🔴 OVERBOOKED"
-
-    def get_slot_status(booked, target):
-
-        if booked == 0:
-            return "🔴"
-    
-        elif booked < target:
-            return "🟡"
-    
-        elif booked == target:
-            return "🟢"
-    
-        return "🔵"
-    
-    with left_col:
-
         st.subheader("Today")
         
         or_today = (
@@ -432,6 +381,57 @@ if page == "Appointment Counts":
             for item in needs:
                 st.write(f"• {item}")
 
+    
+        c1, c2, c3, c4 = st.columns(4)
+    
+        c1.metric("OR", today_or)
+        c2.metric("WA", today_wa)
+        c3.metric("CA", today_ca)
+        c4.metric("TOTAL", today_total)
+    
+    with right_col:
+
+        st.subheader("Tomorrow")
+    
+        c1, c2, c3, c4 = st.columns(4)
+    
+        c1.metric("OR", tomorrow_or)
+        c2.metric("WA", tomorrow_wa)
+        c3.metric("CA", tomorrow_ca)
+        c4.metric("TOTAL", tomorrow_total)
+
+    st.divider()
+
+    st.info(
+        "🔴 Empty    |    🟡 Needs Leads    |    🟢 Goal Met    |    🔵 Extra Leads"
+    )
+    
+    left_col, right_col = st.columns(2)
+
+    def get_status(booked, capacity):
+
+        if booked < (capacity * 0.75):
+            return "🟡 NEED LEADS"
+    
+        elif booked <= capacity:
+            return "🟢 FULL"
+    
+        return "🔴 OVERBOOKED"
+
+    def get_slot_status(booked, target):
+
+        if booked == 0:
+            return "🔴"
+    
+        elif booked < target:
+            return "🟡"
+    
+        elif booked == target:
+            return "🟢"
+    
+        return "🔵"
+    
+    with left_col:
         
         st.markdown("### WA")
 
