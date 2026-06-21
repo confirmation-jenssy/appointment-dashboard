@@ -23,14 +23,14 @@ items = get_monday_items()
 page = st.sidebar.selectbox(
     "Select Page",
     [
-        "Confirmation",
+        "End of Day Report",
         "Appointment Counts"
     ]
 )
 
-if page == "Confirmation":
+if page == "End of Day Report":
 
-    st.title("Confirmation")
+    st.title("End of Day Report")
 
     # We use the 'items' variable fetched above
     with st.container(): # Use a container for better layout structure
