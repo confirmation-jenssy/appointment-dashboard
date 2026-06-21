@@ -193,7 +193,7 @@ if page == "Total Appointment":
         * lead_multiplier
     )
     
-    st.subheader("Capacity")
+    st.subheader("Appointment Reps are able to Book")
 
     c1, c2, c3 = st.columns(3)
 
