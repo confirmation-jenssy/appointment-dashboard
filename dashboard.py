@@ -1074,23 +1074,22 @@ if page == "Total Appointment":
 if page == "End of Day Export":
 
     st.title("End of Day Export")
-    
+
     eod_counts = build_eod_counts(items)
 
-    if page == "End of Day Export":
+    st.write(f"Items Loaded: {len(items)}")
 
-        st.title("End of Day Export")
-
-        st.write(f"Items Loaded: {len(items)}")
+    for item in items[:20]:
 
         for col in item["column_values"]:
-    
+
             if col["id"] == "status":
+
                 st.write(
                     item["name"],
+                    "|",
                     col["text"]
                 )
-                
 
     st.subheader("CF Appointments Ready")
 
