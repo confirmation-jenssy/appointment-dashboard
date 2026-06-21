@@ -131,23 +131,28 @@ if page == "Appointment Counts":
     counts = build_appointment_counts(items)
 
     st.header("Rep Capacity")
+    
+    c1, c2, c3 = st.columns(3)
+    
+    with c1:
+        oregon_reps = st.number_input(
+            "OR Reps",
+            min_value=0,
+            value=2
+        )
+    
+    with c2:
+        washington_reps = st.number_input(
+            "WA Reps",
+            min_value=0,
+            value=2
+        )
 
-    oregon_reps = st.number_input(
-        "Oregon Reps",
-        min_value=0,
-        value=4
-    )
-
-    washington_reps = st.number_input(
-        "Washington Reps",
-        min_value=0,
-        value=3
-    )
-
+with c3:
     socal_reps = st.number_input(
-        "Southern California Reps",
+        "CA Reps",
         min_value=0,
-        value=5
+        value=2
     )
 
     st.subheader("Capacity")
