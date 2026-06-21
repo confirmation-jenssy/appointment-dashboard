@@ -317,26 +317,22 @@ if page == "Appointment Counts":
     with left_col:
 
         st.subheader("Today")
-        
-        or_today = (
+
+        or_col, wa_col, ca_col = st.columns(3)
+
+        with or_col:
+
+            st.markdown("### OR")
+
+            # Oregon slots
+            or_today = (
             counts["oregon"]["today"]["10-12"]
             + counts["oregon"]["today"]["1-3"]
             + counts["oregon"]["today"]["4-6"]
         )
-        
-        wa_today = (
-            counts["washington"]["today"]["10-12"]
-            + counts["washington"]["today"]["1-3"]
-            + counts["washington"]["today"]["4-6"]
-        )
-        
-        ca_today = (
-            counts["socal"]["today"]["10-12"]
-            + counts["socal"]["today"]["1-3"]
-            + counts["socal"]["today"]["4-6"]
-        )
-        
-        st.markdown("### OR")
+
+            # Oregon Needs Leads
+            st.markdown("### OR")
         
         slot_target = round(
             oregon_target / 3
@@ -425,7 +421,18 @@ if page == "Appointment Counts":
         
             for item in needs:
                 st.write(f"• {item}")
-
+        
+        wa_today = (
+            counts["washington"]["today"]["10-12"]
+            + counts["washington"]["today"]["1-3"]
+            + counts["washington"]["today"]["4-6"]
+        )
+        
+        ca_today = (
+            counts["socal"]["today"]["10-12"]
+            + counts["socal"]["today"]["1-3"]
+            + counts["socal"]["today"]["4-6"]
+        )
         
         st.markdown("### WA")
 
