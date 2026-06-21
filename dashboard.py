@@ -498,7 +498,7 @@ if page == "Appointment Counts":
             f"Leads: {slot_booked} | Goal: {slot_target}"
         )
 
-                oregon_needed = (
+        oregon_needed = (
             max(0, slot_target - counts["oregon"]["today"]["10-12"])
             + max(0, slot_target - counts["oregon"]["today"]["1-3"])
             + max(0, slot_target - counts["oregon"]["today"]["4-6"])
