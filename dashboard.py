@@ -359,7 +359,7 @@ if page == "Appointment Counts":
         slot_booked = counts["oregon"]["today"]["1-3"]
 
         st.write(
-            f"1PM-13PM {get_slot_status(slot_booked, slot_target)}"
+            f"1PM-3PM {get_slot_status(slot_booked, slot_target)}"
         )
         
         st.caption(
