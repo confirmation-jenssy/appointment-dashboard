@@ -322,7 +322,10 @@ if page == "Appointment Counts":
 
         with or_col:
 
-            st.markdown("### OR")
+            st.markdown(
+                "<h3 style='color:#2563eb'>OR</h3>",
+                unsafe_allow_html=True
+            )
 
             # Oregon slots
             or_today = (
@@ -422,7 +425,10 @@ if page == "Appointment Counts":
             
         with wa_col:
 
-            st.markdown("### WA")
+            st.markdown(
+                "<h3 style='color:#16a34a'>WA</h3>",
+                unsafe_allow_html=True
+            )
 
             # Washington slots
             wa_today = (
@@ -522,7 +528,10 @@ if page == "Appointment Counts":
 
         with ca_col:
 
-            st.markdown("### CA")
+            st.markdown(
+                "<h3 style='color:#dc2626'>CA</h3>",
+                unsafe_allow_html=True
+            )
 
             # California slots
             ca_today = (
@@ -628,7 +637,10 @@ if page == "Appointment Counts":
 
         with or_col:
 
-            st.markdown("### OR")
+            st.markdown(
+                "<h3 style='color:#2563eb'>OR</h3>",
+                unsafe_allow_html=True
+            )
         
             slot_target = round(
                 oregon_target / 3
@@ -720,7 +732,10 @@ if page == "Appointment Counts":
 
         with wa_col:
 
-            st.markdown("### WA")
+            st.markdown(
+                "<h3 style='color:#16a34a'>WA</h3>",
+                unsafe_allow_html=True
+            )
 
             slot_target = round(
             washington_target / 3
@@ -812,7 +827,10 @@ if page == "Appointment Counts":
 
         with ca_col:
 
-            st.markdown("### CA")
+            st.markdown(
+                "<h3 style='color:#dc2626'>CA</h3>",
+                unsafe_allow_html=True
+            )
 
             slot_target = round(
                 socal_target / 3
