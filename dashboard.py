@@ -259,6 +259,10 @@ if page == "Appointment Counts":
     
     # SIDE BY SIDE
 
+    st.info(
+        "🔴 Empty    |    🟡 Needs Leads    |    🟢 Goal Met    |    🔵 Extra Leads"
+    )
+    
     left_col, right_col = st.columns(2)
     
     with left_col:
