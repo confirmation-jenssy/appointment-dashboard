@@ -284,7 +284,7 @@ if page == "Appointment Counts":
     st.divider()
 
     st.info(
-    "🔴 Empty    |    🟡 Needs Leads    |    🟢 Goal Met    |    🔵 Extra Leads"
+        "🔴 Empty    |    🟡 Needs Leads    |    🟢 Goal Met    |    🔵 Extra Leads"
     )
     
     left_col, right_col = st.columns(2)
