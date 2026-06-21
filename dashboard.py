@@ -1025,9 +1025,9 @@ if page == "Total Appointment":
                 for item in needs:
                     st.write(f"• {item}")  
         
-if page == "End of Day Report":
+if page == "End of Day Export":
 
-    st.title("End of Day Report")
+    st.title("End of Day Export")
     st.subheader("CF Appointments Ready")
     
     st.write("Tommy: 0")
