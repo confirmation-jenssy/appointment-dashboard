@@ -1224,6 +1224,21 @@ if page == "End of Day Export":
             st.secrets["universal_sheet_id"]
         ).worksheet("AUTO")
 
+        tommy_ws.append_row([
+            "06/18/2026 11:30 AM",
+            "TEST CUSTOMER",
+            "123 Main St",
+            "555-555-5555",
+            "Test Job",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ])
+        
+        st.success("Test row written")
+        
         st.success("Sheets connected")
     
     st.success("Google connected!")
