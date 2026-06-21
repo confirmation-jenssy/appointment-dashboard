@@ -302,7 +302,7 @@ if page == "Appointment Counts":
         )
         
         st.write(
-            f"10-12: {counts['oregon']['today']['10-12']}"
+            f"10-12: {counts['oregon']['today']['10AM - 12PM']}"
         )
         
         st.write(
