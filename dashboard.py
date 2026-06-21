@@ -199,37 +199,37 @@ if page == "Appointment Counts":
         f"ATM: {total_capacity}"
     )
 
-    today_or = (
-        counts["oregon"]["today"]["10-12"]
-        + counts["oregon"]["today"]["1-3"]
-        + counts["oregon"]["today"]["4-6"]
+    tomorrow_or = (
+        counts["oregon"]["tomorrow"]["10-12"]
+        + counts["oregon"]["tomorrow"]["1-3"]
+        + counts["oregon"]["tomorrow"]["4-6"]
     )
     
-    today_wa = (
-        counts["washington"]["today"]["10-12"]
-        + counts["washington"]["today"]["1-3"]
-        + counts["washington"]["today"]["4-6"]
+    tomorrow_wa = (
+        counts["washington"]["tomorrow"]["10-12"]
+        + counts["washington"]["tomorrow"]["1-3"]
+        + counts["washington"]["tomorrow"]["4-6"]
     )
     
-    today_ca = (
-        counts["socal"]["today"]["10-12"]
-        + counts["socal"]["today"]["1-3"]
-        + counts["socal"]["today"]["4-6"]
+    tomorrow_ca = (
+        counts["socal"]["tomorrow"]["10-12"]
+        + counts["socal"]["tomorrow"]["1-3"]
+        + counts["socal"]["tomorrow"]["4-6"]
     )
     
-    today_total = (
-        today_or
-        + today_wa
-        + today_ca
+    tomorrow_total = (
+        tomorrow_or
+        + tomorrow_wa
+        + tomorrow_ca
     )
     
-    st.subheader("Today")
+    st.subheader("Tomorrow")
     
     st.write(
-        f"OR: {today_or}    "
-        f"WA: {today_wa}    "
-        f"CA: {today_ca}    "
-        f"TOTAL: {today_total}    "
+        f"OR: {tomorrow_or}    "
+        f"WA: {tomorrow_wa}    "
+        f"CA: {tomorrow_ca}    "
+        f"TOTAL: {tomorrow_total}    "
         f"ATM: {total_capacity}"
     )
 
