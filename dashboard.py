@@ -117,24 +117,6 @@ if page == "End of Day Report":
             col1.info("Data Unavailable")
             col2.warning("Please check your API keys or board settings.")
 
-if page == "End of Day Report":
-
-    st.title("End of Day Report")
-        st.subheader("CF Appointments Ready")
-    
-        st.write("Tommy: 0")
-        st.write("Elite: 0")
-        st.write("McCormick: 0")
-        st.write("Nova: 0")
-        st.write("Universal: 0")
-    
-        st.divider()
-    
-        st.write("Total: 0")
-    
-        if st.button("Export CF Appointments"):
-            st.success("Export started")
-
 if page == "Total Appointment":
 
     st.title("Total Appointment")
@@ -1043,4 +1025,20 @@ if page == "Total Appointment":
                 for item in needs:
                     st.write(f"• {item}")  
         
-        
+if page == "End of Day Report":
+
+    st.title("End of Day Report")
+        st.subheader("CF Appointments Ready")
+    
+        st.write("Tommy: 0")
+        st.write("Elite: 0")
+        st.write("McCormick: 0")
+        st.write("Nova: 0")
+        st.write("Universal: 0")
+    
+        st.divider()
+    
+        st.write("Total: 0")
+    
+        if st.button("Export CF Appointments"):
+            st.success("Export started")
