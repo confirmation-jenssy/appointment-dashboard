@@ -186,5 +186,42 @@ if page == "Appointment Counts":
         counts["socal"]["tomorrow"]
     )
     
+    st.subheader("Status")
 
+    oregon_booked = (
+        counts["oregon"]["tomorrow"]["10-12"]
+        + counts["oregon"]["tomorrow"]["1-3"]
+        + counts["oregon"]["tomorrow"]["4-6"]
+    )
+    
+    washington_booked = (
+        counts["washington"]["tomorrow"]["10-12"]
+        + counts["washington"]["tomorrow"]["1-3"]
+        + counts["washington"]["tomorrow"]["4-6"]
+    )
+    
+    socal_booked = (
+        counts["socal"]["tomorrow"]["10-12"]
+        + counts["socal"]["tomorrow"]["1-3"]
+        + counts["socal"]["tomorrow"]["4-6"]
+    )
+    
+    oregon_capacity = oregon_reps * 3
+    washington_capacity = washington_reps * 3
+    socal_capacity = socal_reps * 3
+    
+    st.write(
+        "Oregon:",
+        f"{oregon_booked}/{oregon_capacity}"
+    )
+    
+    st.write(
+        "Washington:",
+        f"{washington_booked}/{washington_capacity}"
+    )
+    
+    st.write(
+        "SoCal:",
+        f"{socal_booked}/{socal_capacity}"
+    )
             
