@@ -275,64 +275,64 @@ if page == "Appointment Counts":
     
         return "🔴 OVERBOOKED"
     
-        with left_col:
+    with left_col:
 
-            st.subheader("Today")
+        st.subheader("Today")
         
-            or_today = (
-                counts["oregon"]["today"]["10-12"]
-                + counts["oregon"]["today"]["1-3"]
-                + counts["oregon"]["today"]["4-6"]
-            )
+        or_today = (
+            counts["oregon"]["today"]["10-12"]
+            + counts["oregon"]["today"]["1-3"]
+            + counts["oregon"]["today"]["4-6"]
+        )
         
-            wa_today = (
-                counts["washington"]["today"]["10-12"]
-                + counts["washington"]["today"]["1-3"]
-                + counts["washington"]["today"]["4-6"]
-            )
+        wa_today = (
+            counts["washington"]["today"]["10-12"]
+            + counts["washington"]["today"]["1-3"]
+            + counts["washington"]["today"]["4-6"]
+        )
         
-            ca_today = (
-                counts["socal"]["today"]["10-12"]
-                + counts["socal"]["today"]["1-3"]
-                + counts["socal"]["today"]["4-6"]
-            )
+        ca_today = (
+            counts["socal"]["today"]["10-12"]
+            + counts["socal"]["today"]["1-3"]
+            + counts["socal"]["today"]["4-6"]
+        )
         
-            st.markdown(
-                f"**OR {get_status(or_today, oregon_reps * 3)}**"
-            )
+        st.markdown(
+            f"**OR {get_status(or_today, oregon_reps * 3)}**"
+        )
         
-            st.write(counts["oregon"]["today"])
+        st.write(counts["oregon"]["today"])
         
-            st.markdown(
-                f"**WA {get_status(wa_today, washington_reps * 3)}**"
-            )
+        st.markdown(
+            f"**WA {get_status(wa_today, washington_reps * 3)}**"
+        )
         
-            st.write(counts["washington"]["today"])
+        st.write(counts["washington"]["today"])
         
-            st.markdown(
-                f"**CA {get_status(ca_today, socal_reps * 3)}**"
-            )
+        st.markdown(
+            f"**CA {get_status(ca_today, socal_reps * 3)}**"
+        )
         
-            st.write(counts["socal"]["today"])
+        st.write(counts["socal"]["today"])
     
-        with right_col:
+    with right_col:
         
-            st.subheader("Tomorrow")
+        st.subheader("Tomorrow")
         
-            st.markdown(
-                f"**OR {get_status(tomorrow_or, oregon_reps * 3)}**"
-            )
+        st.markdown(
+            f"**OR {get_status(tomorrow_or, oregon_reps * 3)}**"
+        )
         
-            st.write(counts["oregon"]["tomorrow"])
+        st.write(counts["oregon"]["tomorrow"])
         
-            st.markdown(
-                f"**WA {get_status(tomorrow_wa, washington_reps * 3)}**"
-            )
+        st.markdown(
+            f"**WA {get_status(tomorrow_wa, washington_reps * 3)}**"
+        )
         
-            st.write(counts["washington"]["tomorrow"])
+        st.write(counts["washington"]["tomorrow"])
         
-            st.markdown(
-                f"**CA {get_status(tomorrow_ca, socal_reps * 3)}**"
-            )
+        st.markdown(
+            f"**CA {get_status(tomorrow_ca, socal_reps * 3)}**"
+        )
         
-            st.write(counts["socal"]["tomorrow"])
+        st.write(counts["socal"]["tomorrow"])
