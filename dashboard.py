@@ -1082,7 +1082,7 @@ def build_eod_export_rows(items):
 
     rows = []
 
-    for item in items:
+    for items in st.session_state["eod_items"]:
 
         status = ""
         confirmation = ""
@@ -1234,6 +1234,25 @@ if page == "End of Day Export":
             "Historical Items Loaded:",
             len(eod_items)
         )
+
+        count = 0
+
+        for item in eod_items:
+        
+            appointment_date = get_column_value(
+                item,
+                "date_mkr2q53p"
+            )
+        
+            if appointment_date.startswith("2026-06-15"):
+                count += 1
+        
+        st.write(
+            "June 15 appointments:",
+            count
+        )
+
+        st.session_state["eod_items"] = eod_items
 
         dates = []
 
