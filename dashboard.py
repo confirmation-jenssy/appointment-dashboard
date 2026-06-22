@@ -1329,6 +1329,12 @@ if page == "End of Day Export":
 
         export_count = 0
 
+        tommy_rows = []
+        elite_rows = []
+        mccormick_rows = []
+        nova_rows = []
+        universal_rows = []
+
         for item in st.session_state["eod_items"]:
         
             status = get_column_value(item, "status")
@@ -1381,11 +1387,6 @@ if page == "End of Day Export":
         
         st.write("Appointments that will export:", export_count)
 
-        tommy_rows = []
-        elite_rows = []
-        mccormick_rows = []
-        nova_rows = []
-        universal_rows = []
 
         st.success(
             f"Appointments that will export: {export_count}"
