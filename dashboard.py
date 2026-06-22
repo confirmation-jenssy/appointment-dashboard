@@ -1296,11 +1296,7 @@ if page == "End of Day Export":
             f"Loaded {len(all_items)} total items"
         )
 
-    import requests
-
-        st.warning(
-            "Only click once. This appends rows to the AUTO tabs."
-        )
+        import requests
 
         tommy_ws = client.open_by_key(
             st.secrets["tommy_sheet_id"]
