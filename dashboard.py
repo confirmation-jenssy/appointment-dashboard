@@ -1330,13 +1330,7 @@ if page == "End of Day Export":
         export_count = 0
 
         for item in st.session_state["eod_items"]:
-
-            tommy_rows = []
-            elite_rows = []
-            mccormick_rows = []
-            nova_rows = []
-            universal_rows = []
-
+        
             status = get_column_value(item, "status")
             confirmation = get_column_value(item, "color_mkr2rpkj")
             appointment_date = get_column_value(item, "date_mkr2q53p")
@@ -1359,53 +1353,17 @@ if page == "End of Day Export":
             ):
                 continue
         
-            row = [
-                appointment_date,
-                item["name"],
-                get_column_value(item, "text_mkr2an4n"),
-                get_column_value(item, "text_mkr27gh0"),
-                get_column_value(item, "long_text_mkr2wjqk"),
-                "",
-                "",
-                "",
-                "",
-                ""
-            ]
-
-            st.write(
-                "DEBUG:",
-                item["name"],
-                "| Status:",
-                repr(status),
-                "| Confirm:",
-                repr(confirmation),
-                "| Date:",
-                appointment_date
-            )
-        
-            if status == "Tommy":
-                tommy_rows.append(row)
-        
-            elif status == "Elite":
-                elite_rows.append(row)
+            if status in ["Tommy", "Elite"]:
+                export_count += 1
         
             elif (
-                status == "McCormick"
+                status in ["McCormick", "Nova", "Universal"]
                 and confirmation == "Confirmed"
             ):
-                mccormick_rows.append(row)
+                export_count += 1
         
-            elif (
-                status == "Nova"
-                and confirmation == "Confirmed"
-            ):
-                nova_rows.append(row)
-        
-            elif (
-                status == "Universal"
-                and confirmation == "Confirmed"
-            ):
-                universal_rows.append(row)
+        st.error(f"FINAL COUNT = {export_count}")
+st.stop()
 
         st.write("Tommy:", len(tommy_rows))
         st.write("Elite:", len(elite_rows))
