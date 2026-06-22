@@ -1311,6 +1311,33 @@ if page == "End of Day Export":
 
         if st.button("Send Appointments"):
 
+            if st.button("Send Appointments"):
+
+            tommy_rows = []
+            elite_rows = []
+            mccormick_rows = []
+            nova_rows = []
+            universal_rows = []
+        
+            for item in selected_items:
+        
+                # build row here
+        
+                if status == "Tommy":
+                    tommy_rows.append(row)
+        
+                elif status == "Elite":
+                    elite_rows.append(row)
+        
+                elif status == "McCormick":
+                    mccormick_rows.append(row)
+        
+                elif status == "Nova":
+                    nova_rows.append(row)
+        
+                elif status == "Universal":
+                    universal_rows.append(row)
+
             tommy_ws = client.open_by_key(
                 st.secrets["tommy_sheet_id"]
             ).worksheet("AUTO")
