@@ -1352,6 +1352,10 @@ if page == "End of Day Export":
                 item,
                 "long_text_mkr2wjqk"
             )
+
+            formatted_date = appt_dt.strftime(
+                "%m/%d/%Y %I:%M %p"
+            )
             
             row = [
                 formatted_date,
