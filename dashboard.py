@@ -1363,7 +1363,7 @@ if page == "End of Day Export":
                 export_count += 1
         
         st.error(f"FINAL COUNT = {export_count}")
-st.stop()
+        st.stop()
 
         st.write("Tommy:", len(tommy_rows))
         st.write("Elite:", len(elite_rows))
