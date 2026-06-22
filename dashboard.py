@@ -1177,239 +1177,150 @@ if page == "End of Day Export":
 
     st.title("End of Day Export")
 
-    import gspread
+    items = get_monday_items()
 
-    from google.oauth2.service_account import (
-        Credentials
-    )
-    
-    creds = Credentials.from_service_account_info(
-        dict(st.secrets["gcp_service_account"]),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-    
-    client = gspread.authorize(creds)
+    if "export_rows" not in st.session_state:
+        st.session_state["export_rows"] = []
 
-    st.success("Google connected!")
+    if st.button("Load Appointments"):
 
-    from datetime import datetime
-    from zoneinfo import ZoneInfo
-        
-    today = datetime.now(
-        ZoneInfo("America/Los_Angeles")
-    ).date()
-        
-    tommy_rows = []
-    elite_rows = []
-    mccormick_rows = []
-    nova_rows = []
-    universal_rows = []
-        
-    for item in st.session_state["eod_items"]:
-        
-        status = get_column_value(item, "status")
-        confirmation = get_column_value(item, "color_mkr2rpkj")
-        appointment_date = get_column_value(item, "date_mkr2q53p")
-        
-        if not appointment_date:
-            continue
-        
-        try:
-            appt_dt = datetime.strptime(
-                appointment_date,
-                "%Y-%m-%d %H:%M"
+        rows = []
+
+        today = datetime.now(
+            ZoneInfo("America/Los_Angeles")
+        ).date()
+
+        for item in items:
+
+            status = get_column_value(item, "status")
+            confirmation = get_column_value(
+                item,
+                "color_mkr2rpkj"
             )
-        except:
-            continue
-        
-        if appt_dt.date() != today:
-            continue
-        
-        include = False
-        
-        if status in ["Tommy", "Elite"]:
-            include = True
-        
-        elif (
-            status in ["McCormick", "Nova", "Universal"]
-            and confirmation == "Confirmed"
-        ):
-            include = True
-        
-        if not include:
-            continue
-        
-        address = get_column_value(
-            item,
-            "text_mkr2an4n"
-        )
-        
-        phone = get_column_value(
-            item,
-            "text_mkr27gh0"
-        )
-        
-        work = get_column_value(
-            item,
-            "long_text_mkr2wjqk"
-        )
-        
-        formatted_date = appt_dt.strftime(
-            "%m/%d/%Y %I:%M %p"
-        )
-        
-        row = [
-            formatted_date,
-            item["name"],
-            address,
-            phone,
-            work
-        ]
-        
-        if status == "Tommy":
-            tommy_rows.append(row)
-        
-        elif status == "Elite":
-            elite_rows.append(row)
-        
-        elif status == "McCormick":
-            mccormick_rows.append(row)
-        
-        elif status == "Nova":
-            nova_rows.append(row)
-        
-        elif status == "Universal":
-            universal_rows.append(row)
-        
-            st.write("Tommy:", len(tommy_rows))
-            st.write("Elite:", len(elite_rows))
-            st.write("McCormick:", len(mccormick_rows))
-            st.write("Nova:", len(nova_rows))
-            st.write("Universal:", len(universal_rows))
-            
-            tommy_ws = client.open_by_key(
-                st.secrets["tommy_sheet_id"]
-            ).worksheet("AUTO")
-            
-            elite_ws = client.open_by_key(
-                st.secrets["elite_sheet_id"]
-            ).worksheet("AUTO")
-            
-            mccormick_ws = client.open_by_key(
-                st.secrets["mccormick_sheet_id"]
-            ).worksheet("AUTO")
-            
-            nova_ws = client.open_by_key(
-                st.secrets["nova_sheet_id"]
-            ).worksheet("AUTO")
-            
-            universal_ws = client.open_by_key(
-                st.secrets["universal_sheet_id"]
-            ).worksheet("AUTO")
-            
-            if tommy_rows:
-                tommy_ws.append_rows(tommy_rows)
-            
-            if elite_rows:
-                elite_ws.append_rows(elite_rows)
-            
-            if mccormick_rows:
-                mccormick_ws.append_rows(mccormick_rows)
-            
-            if nova_rows:
-                nova_ws.append_rows(nova_rows)
-            
-            if universal_rows:
-                universal_ws.append_rows(universal_rows)
-            
-            st.success("EXPORT COMPLETE")
+            appointment_date = get_column_value(
+                item,
+                "date_mkr2q53p"
+            )
 
-    eod_counts = build_eod_counts(items)
+            if not appointment_date:
+                continue
 
-    st.subheader("CF Appointments Ready")
+            try:
+                appt_dt = datetime.strptime(
+                    appointment_date,
+                    "%Y-%m-%d %H:%M"
+                )
+            except:
+                continue
 
-    c1, c2, c3, c4, c5 = st.columns(5)
+            if appt_dt.date() != today:
+                continue
 
-    c1.metric("Tommy", eod_counts["tommy"])
-    c2.metric("Elite", eod_counts["elite"])
-    c3.metric("McCormick", eod_counts["mccormick"])
-    c4.metric("Nova", eod_counts["nova"])
-    c5.metric("Universal", eod_counts["universal"])
-    
-    st.divider()
-    
-    total_cf = sum(eod_counts.values())
+            include = False
 
-    st.metric(
-        "Total CF",
-        total_cf
-    )
-    
-    if st.button("Build Export List"):
+            if status in ["Tommy", "Elite"]:
+                include = True
 
-        st.session_state["export_rows"] = (
-            build_eod_export_rows(items)
-        )
-    
-    if "export_rows" in st.session_state:
-    
+            elif (
+                status in [
+                    "McCormick",
+                    "Nova",
+                    "Universal"
+                ]
+                and confirmation == "Confirmed"
+            ):
+                include = True
+
+            if not include:
+                continue
+
+            rows.append({
+                "Export": False,
+                "Company": status,
+                "Date": appointment_date,
+                "Name": item["name"],
+                "Address": get_column_value(
+                    item,
+                    "text_mkr2an4n"
+                ),
+                "Phone": get_column_value(
+                    item,
+                    "text_mkr27gh0"
+                ),
+                "Work": get_column_value(
+                    item,
+                    "long_text_mkr2wjqk"
+                )
+            })
+
+        st.session_state["export_rows"] = rows
+
+    if st.session_state["export_rows"]:
+
         df = pd.DataFrame(
             st.session_state["export_rows"]
         )
-    
-        if "Export" not in df.columns:
-            df.insert(0, "Export", False)
-    
+
         edited_df = st.data_editor(
             df,
             use_container_width=True,
-            hide_index=True,
-            key="eod_export_editor"
+            hide_index=True
         )
-    
+
         selected = edited_df[
             edited_df["Export"] == True
         ]
-    
+
         st.metric(
-            "Selected For Export",
+            "Selected",
             len(selected)
         )
 
-        st.divider()
+        if st.button("Send Appointments"):
 
-        c1, c2, c3, c4, c5 = st.columns(5)
-        
-        c1.metric(
-            "Tommy",
-            len(selected[selected["Company"] == "Tommy"])
-        )
-        
-        c2.metric(
-            "Elite",
-            len(selected[selected["Company"] == "Elite"])
-        )
-        
-        c3.metric(
-            "McCormick",
-            len(selected[selected["Company"] == "McCormick"])
-        )
-        
-        c4.metric(
-            "Nova",
-            len(selected[selected["Company"] == "Nova"])
-        )
-        
-        c5.metric(
-            "Universal",
-            len(selected[selected["Company"] == "Universal"])
-        )
-        
-        if st.button("Send Selected"):
+            tommy_ws = client.open_by_key(
+                st.secrets["tommy_sheet_id"]
+            ).worksheet("AUTO")
 
-            st.success(
-                f"Exporting {len(selected)} appointments"
-            )
+            elite_ws = client.open_by_key(
+                st.secrets["elite_sheet_id"]
+            ).worksheet("AUTO")
+
+            mccormick_ws = client.open_by_key(
+                st.secrets["mccormick_sheet_id"]
+            ).worksheet("AUTO")
+
+            nova_ws = client.open_by_key(
+                st.secrets["nova_sheet_id"]
+            ).worksheet("AUTO")
+
+            universal_ws = client.open_by_key(
+                st.secrets["universal_sheet_id"]
+            ).worksheet("AUTO")
+
+            for _, row in selected.iterrows():
+
+                values = [
+                    row["Date"],
+                    row["Name"],
+                    row["Address"],
+                    row["Phone"],
+                    row["Work"]
+                ]
+
+                if row["Company"] == "Tommy":
+                    tommy_ws.append_row(values)
+
+                elif row["Company"] == "Elite":
+                    elite_ws.append_row(values)
+
+                elif row["Company"] == "McCormick":
+                    mccormick_ws.append_row(values)
+
+                elif row["Company"] == "Nova":
+                    nova_ws.append_row(values)
+
+                elif row["Company"] == "Universal":
+                    universal_ws.append_row(values)
+
+            st.success("Appointments Sent")
