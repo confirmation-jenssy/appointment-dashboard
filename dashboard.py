@@ -1338,9 +1338,27 @@ if page == "End of Day Export":
             if not include:
                 continue
         
+            address = get_column_value(
+                item,
+                "text_mkr2an4n"
+            )
+            
+            phone = get_column_value(
+                item,
+                "text_mkr27gh0"
+            )
+            
+            work = get_column_value(
+                item,
+                "long_text_mkr2wjqk"
+            )
+            
             row = [
-                appointment_date,
-                item["name"]
+                formatted_date,
+                item["name"],
+                address,
+                phone,
+                work
             ]
         
             if status == "Tommy":
