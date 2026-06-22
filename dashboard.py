@@ -78,7 +78,8 @@ page = st.sidebar.selectbox(
     [
         "End of Day Report",
         "End of Day Export",
-        "Total Appointment"
+        "Total Appointment",
+        "Lead Cards"
     ]
 )
 
@@ -1380,4 +1381,101 @@ if page == "End of Day Export":
         Total Sent:
         {tommy_sent + elite_sent + mccormick_sent + nova_sent + universal_sent}
         """
+            )
+
+def build_lead_card(
+    company,
+    appointment_date,
+    name,
+    address,
+    phone,
+    project
+):
+
+    return f"""
+LEAD CARD {company.upper()}
+
+DATE/TIME: {appointment_date}
+NAME: {name}
+ADDRESS: {address}
+PHONE: {phone}
+
+PROJECT DETAILS:
+{project}
+""".strip()
+
+if page == "Lead Cards":
+
+    st.title("Lead Card Builder")
+
+    items = get_monday_items()
+
+    lead_rows = []
+
+    for item in items:
+    
+        status = get_column_value(item, "status")
+        confirmation = get_column_value(
+            item,
+            "color_mkr2rpkj"
+        )
+    
+        include = False
+    
+        if status in ["Tommy", "Elite"]:
+            include = True
+    
+        elif (
+            status in [
+                "Nova",
+                "Universal",
+                "McCormick"
+            ]
+            and confirmation == "Confirmed"
+        ):
+            include = True
+    
+        if not include:
+            continue
+    
+        lead_rows.append({
+            "Company": status,
+            "Name": item["name"],
+            "Date": get_column_value(
+                item,
+                "date_mkr2q53p"
+            ),
+            "Address": get_column_value(
+                item,
+                "text_mkr2an4n"
+            ),
+            "Phone": get_column_value(
+                item,
+                "text_mkr27gh0"
+            ),
+            "Project": get_column_value(
+                item,
+                "long_text_mkr2wjqk"
+            )
+        })
+        
+     st.write(
+            f"Lead Cards Found: {len(lead_rows)}"
+        )
+
+        for row in lead_rows:
+
+            card = build_lead_card(
+                row["Company"],
+                row["Date"],
+                row["Name"],
+                row["Address"],
+                row["Phone"],
+                row["Project"]
+            )
+    
+            st.text_area(
+                f"{row['Company']} - {row['Name']}",
+                card,
+                height=250
             )
