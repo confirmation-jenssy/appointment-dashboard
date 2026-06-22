@@ -1469,22 +1469,56 @@ if page == "Lead Cards":
 
     st.title("Lead Card Builder")
 
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
     items = get_monday_items()
+
+    today = datetime.now(
+        ZoneInfo("America/Los_Angeles")
+    ).date()
 
     lead_rows = []
 
     for item in items:
 
-        status = get_column_value(item, "status")
+        status = get_column_value(
+            item,
+            "status"
+        )
 
         confirmation = get_column_value(
             item,
             "color_mkr2rpkj"
         )
 
+        appointment_date = get_column_value(
+            item,
+            "date_mkr2q53p"
+        )
+
+        if not appointment_date:
+            continue
+
+        try:
+
+            appt_dt = datetime.strptime(
+                appointment_date,
+                "%Y-%m-%d %H:%M"
+            )
+
+        except:
+            continue
+
+        if appt_dt.date() != today:
+            continue
+
         include = False
 
-        if status in ["Tommy", "Elite"]:
+        if status in [
+            "Tommy",
+            "Elite"
+        ]:
             include = True
 
         elif (
@@ -1501,46 +1535,108 @@ if page == "Lead Cards":
             continue
 
         lead_rows.append({
+
             "Company": status,
-            "Name": item["name"],
-            "Date": get_column_value(
-                item,
-                "date_mkr2q53p"
+
+            "Date": appt_dt.strftime(
+                "%m/%d/%Y %I:%M %p"
             ),
+
+            "Name": item["name"],
+
             "Address": get_column_value(
                 item,
                 "text_mkr2an4n"
             ),
+
             "Phone": get_column_value(
                 item,
                 "text_mkr27gh0"
             ),
+
             "Project": get_column_value(
                 item,
                 "long_text_mkr2wjqk"
             )
         })
 
-    st.write(
-        f"Lead Cards Found: {len(lead_rows)}"
+    st.metric(
+        "Lead Cards Ready",
+        len(lead_rows)
     )
+
+    st.divider()
 
     for row in lead_rows:
 
-        card = build_lead_card(
-            row["Company"],
-            row["Date"],
-            row["Name"],
-            row["Address"],
-            row["Phone"],
-            row["Project"]
-        )
+        if row["Company"] == "Tommy":
+
+            card = f"""
+LEAD CARD TOMMY BUILDER
+
+DATE/TIME: {row['Date']}
+NAME: {row['Name']}
+ADDRESS: {row['Address']}
+PHONE: {row['Phone']}
+PROJECT DETAILS: {row['Project']}
+"""
+
+        elif row["Company"] == "Elite":
+
+            card = f"""
+LEAD CARD ELITE
+
+DATE/TIME: {row['Date']}
+NAME: {row['Name']}
+ADDRESS: {row['Address']}
+PHONE: {row['Phone']}
+PROJECT DETAILS: {row['Project']}
+"""
+
+        elif row["Company"] == "Universal":
+
+            card = f"""
+LEAD CARD UNIVERSAL GROUP TECH
+
+DATE/TIME: {row['Date']}
+NAME: {row['Name']}
+ADDRESS: {row['Address']}
+PHONE: {row['Phone']}
+PROJECT: {row['Project']}
+"""
+
+        elif row["Company"] == "McCormick":
+
+            card = f"""
+LEAD CARD MCCORMICK
+
+DATE/TIME: {row['Date']}
+NAME: {row['Name']}
+ADDRESS: {row['Address']}
+PHONE: {row['Phone']}
+PROJECT: {row['Project']}
+"""
+
+        elif row["Company"] == "Nova":
+
+            card = f"""
+LEAD CARD NOVA
+
+DATE/TIME: {row['Date']}
+NAME: {row['Name']}
+ADDRESS: {row['Address']}
+PHONE: {row['Phone']}
+PROJECT/TITLE HOLDER/CREDIT SCORE/BANKRUPTCY:
+{row['Project']}
+"""
+
+        else:
+            continue
 
         st.subheader(
             f"{row['Company']} - {row['Name']}"
         )
-        
-        st.code(
-            card,
-            language=None
-        )
+
+        st.code(card)
+
+        st.divider()
