@@ -1082,7 +1082,7 @@ def build_eod_export_rows(items):
 
     rows = []
 
-    for items in st.session_state["eod_items"]:
+    for item in st.session_state["eod_items"]:
 
         status = ""
         confirmation = ""
@@ -1362,8 +1362,14 @@ if page == "End of Day Export":
             ):
                 export_count += 1
         
-        st.error(f"FINAL COUNT = {export_count}")
-        st.stop()
+        #st.error(f"FINAL COUNT = {export_count}")
+        #st.stop()
+
+        rows = build_eod_export_rows(
+            st.session_state["eod_items"]
+        )
+        
+        st.write("ROWS BUILT:", len(rows))
 
         st.write("Tommy:", len(tommy_rows))
         st.write("Elite:", len(elite_rows))
