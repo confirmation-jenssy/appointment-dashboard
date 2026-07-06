@@ -1214,6 +1214,8 @@ if page == "End of Day Export":
         load = st.form_submit_button("Load Appointment Now")
     
     if load:
+
+        st.success("Button worked")
     
         rows = []
     
@@ -1257,7 +1259,9 @@ if page == "End of Day Export":
                 "Phone": get_column_value(item, "text_mkr27gh0"),
                 "Work": get_column_value(item, "long_text_mkr2wjqk")
             })
-    
+
+        st.write("Rows found:", len(rows))
+        
         st.session_state["export_rows"] = rows
 
     if st.session_state["export_rows"]:
