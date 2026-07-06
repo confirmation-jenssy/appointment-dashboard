@@ -1214,33 +1214,18 @@ if page == "End of Day Export":
         load = st.form_submit_button("Load Appointment Now")
     
     if load:
-
-        st.write("Selected Date:", selected_date)
     
         rows = []
     
         for item in items:
-            ...
     
-    if st.button("Load Appointment Now"):
-        st.write("clicked") 
-
-        rows = []
-
-        for item in items:
-            st.write(item["name"])
-
             status = get_column_value(item, "status")
-            confirmation = get_column_value(
-                item,
-                "color_mkr2rpkj"
-            )
+            confirmation = get_column_value(item, "color_mkr2rpkj")
             appointment_date = get_column_value(item, "date_mkr2q53p")
-            st.write(item["name"], appointment_date)
-
+    
             if not appointment_date:
                 continue
-
+    
             try:
                 appt_dt = datetime.strptime(
                     appointment_date,
@@ -1248,47 +1233,31 @@ if page == "End of Day Export":
                 )
             except:
                 continue
-
-            #if appt_dt.date() != selected_date:
-                #continue
-
-            include = False
-
-            if status in ["Tommy", "Elite"]:
-                include = True
-
-            elif (
-                status in [
-                    "McCormick",
-                    "Nova",
-                    "Universal"
-                ]
-                and confirmation == "Confirmed"
-            ):
-                include = True
-
+    
+            if appt_dt.date() != selected_date:
+                continue
+    
+            include = (
+                status in ["Tommy", "Elite"]
+                or (
+                    status in ["McCormick", "Nova", "Universal"]
+                    and confirmation == "Confirmed"
+                )
+            )
+    
             if not include:
                 continue
-
+    
             rows.append({
                 "Export": auto_send,
                 "Company": status,
                 "Date": appt_dt.strftime("%m/%d/%Y %I:%M %p"),
                 "Name": item["name"],
-                "Address": get_column_value(
-                    item,
-                    "text_mkr2an4n"
-                ),
-                "Phone": get_column_value(
-                    item,
-                    "text_mkr27gh0"
-                ),
-                "Work": get_column_value(
-                    item,
-                    "long_text_mkr2wjqk"
-                )
+                "Address": get_column_value(item, "text_mkr2an4n"),
+                "Phone": get_column_value(item, "text_mkr27gh0"),
+                "Work": get_column_value(item, "long_text_mkr2wjqk")
             })
-
+    
         st.session_state["export_rows"] = rows
 
     if st.session_state["export_rows"]:
