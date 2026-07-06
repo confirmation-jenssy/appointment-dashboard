@@ -1249,8 +1249,8 @@ if page == "End of Day Export":
             except:
                 continue
 
-            if appt_dt.date() != selected_date:
-                continue
+            #if appt_dt.date() != selected_date:
+                #continue
 
             include = False
 
@@ -1525,9 +1525,12 @@ if page == "Lead Cards":
             "color_mkr2rpkj"
         )
 
-        appointment_date = get_column_value(
-            item,
-            "date_mkr2q53p"
+        appointment_date = get_column_value(item, "date_mkr2q53p")
+
+        st.write(
+            item["name"],
+            appointment_date,
+            appt_dt.date() if appointment_date else "NO DATE"
         )
 
         if not appointment_date:
