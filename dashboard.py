@@ -11,9 +11,8 @@ import requests
 
 from datetime import datetime
 
-from monday_api import BOARD_ID
+from monday_api import BOARD_ID, get_monday_items, get_export_items
 
-from monday_api import get_monday_items 
 from reporting import (
     build_tommy_elite_report,
     build_universal_report,
