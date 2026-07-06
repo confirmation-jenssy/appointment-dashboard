@@ -1237,6 +1237,13 @@ if page == "End of Day Export":
                 continue
     
             if appt_dt.date() != selected_date:
+                st.write(
+                    item["name"],
+                    "Appointment:",
+                    appt_dt.date(),
+                    "Selected:",
+                    selected_date
+                )
                 continue
     
             include = (
