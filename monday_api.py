@@ -74,3 +74,53 @@ def get_monday_items():
         st.error(f"❌ An unexpected error occurred during data fetching: {e}")
         return []
 
+@st.cache_data(ttl=60*15)
+def get_export_items(selected_date):
+
+    api_token = st.secrets["MONDAY_API_KEY"]
+
+    headers = {
+        "Authorization": api_token
+    }
+
+    date_str = selected_date.strftime("%Y-%m-%d")
+
+    query = f"""
+    {{
+      boards(ids: {BOARD_ID}) {{
+        items_page(
+          limit: 500,
+          query_params: {{
+            rules: [
+              {{
+                column_id: "date_mkr2q53p",
+                compare_value: ["{date_str}"],
+                operator: any_of
+              }}
+            ]
+          }}
+        ) {{
+          items {{
+            id
+            name
+            column_values {{
+              id
+              text
+            }}
+          }}
+        }}
+      }}
+    }}
+    """
+
+    response = requests.post(
+        "https://api.monday.com/v2",
+        json={"query": query},
+        headers=headers
+    )
+
+    response.raise_for_status()
+
+    data = response.json()
+
+    return data["data"]["boards"][0]["items_page"]["items"]
