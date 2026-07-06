@@ -1215,6 +1215,7 @@ if page == "End of Day Export":
         rows = []
 
         for item in items:
+            st.write(item["name"])
 
             status = get_column_value(item, "status")
             confirmation = get_column_value(
