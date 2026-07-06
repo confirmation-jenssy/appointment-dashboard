@@ -1222,10 +1222,8 @@ if page == "End of Day Export":
                 item,
                 "color_mkr2rpkj"
             )
-            appointment_date = get_column_value(
-                item,
-                "date_mkr2q53p"
-            )
+            appointment_date = get_column_value(item, "date_mkr2q53p")
+            st.write(item["name"], appointment_date)
 
             if not appointment_date:
                 continue
