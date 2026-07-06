@@ -1197,7 +1197,7 @@ if page == "End of Day Export":
 
     client = gspread.authorize(creds)
 
-    items = get_monday_items()
+    items = get_export_items(selected_date)
 
     if "export_rows" not in st.session_state:
         st.session_state["export_rows"] = []
@@ -1214,6 +1214,8 @@ if page == "End of Day Export":
         load = st.form_submit_button("Load Appointment Now")
     
     if load:
+
+        items = get_export_items(selected_date)
 
         st.success("Button worked")
     
