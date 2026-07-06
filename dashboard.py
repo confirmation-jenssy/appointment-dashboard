@@ -1197,8 +1197,6 @@ if page == "End of Day Export":
 
     client = gspread.authorize(creds)
 
-    items = get_export_items(selected_date)
-
     if "export_rows" not in st.session_state:
         st.session_state["export_rows"] = []
 
