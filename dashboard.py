@@ -1213,8 +1213,6 @@ if page == "End of Day Export":
     if load:
 
         items = get_export_items(selected_date)
-        
-            st.write(items[0]["column_values"])
     
         rows = []
     
