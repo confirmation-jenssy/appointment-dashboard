@@ -1202,12 +1202,25 @@ if page == "End of Day Export":
     if "export_rows" not in st.session_state:
         st.session_state["export_rows"] = []
 
-    selected_date = st.date_input(
+    with st.form("load_form"):
+
+        selected_date = st.date_input(
             "Appointment Date",
             datetime.now(
                 ZoneInfo("America/Los_Angeles")
             ).date()
         )
+    
+        load = st.form_submit_button("Load Appointment Now")
+    
+    if load:
+
+        st.write("Selected Date:", selected_date)
+    
+        rows = []
+    
+        for item in items:
+            ...
     
     if st.button("Load Appointment Now"):
         st.write("clicked") 
