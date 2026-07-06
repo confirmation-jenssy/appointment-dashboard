@@ -1210,8 +1210,7 @@ if page == "End of Day Export":
         )
     
     if st.button("Load Appointment Now"):
-        st.write("clicked")  # debug
-        load_appointments()
+        st.write("clicked") 
 
         rows = []
 
