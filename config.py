@@ -11,12 +11,11 @@ COLUMN_IDS = {
     "confirmation": "color_mkr2rpkj",
 }
 
-CONFIRMED_STATUSES = {"TOMMY", "ELITE", "UNIVERSAL"}
+CONFIRMED_STATUSES = {"TOMMY", "ELITE"}
 
 TOTAL_LEAD_STATUSES = {
     "TOMMY",
     "ELITE",
-    "UNIVERSAL",
     "NO ANSWER",
     "CANCELED",
     "CANCELLED",
