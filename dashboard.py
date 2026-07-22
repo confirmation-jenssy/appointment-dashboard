@@ -173,19 +173,30 @@ if page == "Total Appointment":
     lead_multiplier = 100 / confirmation_rate
 
     # CAPACITY
-    
+
+    # Raw booking capacity per rep, no adjustment. Today's appointments are
+    # booked same-day by the team and are effectively already confirmed
+    # (100% show rate), so today's goals use this raw number directly.
+    oregon_capacity = oregon_reps * 3
+    washington_capacity = washington_reps * 3
+    socal_capacity = socal_reps * 3
+
+    # Tomorrow's appointments are set in advance, so some won't confirm
+    # (no answer, cancel, etc). These targets are inflated by the
+    # confirmation rate so hitting them actually yields the raw capacity
+    # in confirmed appointments.
     oregon_target = round(
-        (oregon_reps * 3)
+        oregon_capacity
         * lead_multiplier
     )
     
     washington_target = round(
-        (washington_reps * 3)
+        washington_capacity
         * lead_multiplier
     )
     
     socal_target = round(
-        (socal_reps * 3)
+        socal_capacity
         * lead_multiplier
     )
     
@@ -200,7 +211,7 @@ if page == "Total Appointment":
         )
         st.metric(
             label=" ",
-            value=oregon_target,
+            value=oregon_capacity,
             delta=f"{oregon_reps} reps"
         )
     
@@ -211,7 +222,7 @@ if page == "Total Appointment":
         )
         st.metric(
             label=" ",
-            value=washington_target,
+            value=washington_capacity,
             delta=f"{washington_reps} reps"
         )
     
@@ -222,7 +233,7 @@ if page == "Total Appointment":
         )
         st.metric(
             label=" ",
-            value=socal_target,
+            value=socal_capacity,
             delta=f"{socal_reps} reps"
         )
     
@@ -419,9 +430,7 @@ if page == "Total Appointment":
     
     with left_col:
 
-        st.subheader("Today")
-
-        or_col, wa_col, ca_col = st.columns(3)
+        st.subheader("Same Day Appt Needed")
 
         with or_col:
 
@@ -439,7 +448,7 @@ if page == "Total Appointment":
 
             # Oregon Needs Leads
             slot_target = round(
-                oregon_target / 3
+                oregon_capacity / 3
             )
             
             slot_booked = counts["oregon"]["today"]["10-12"]
@@ -453,7 +462,7 @@ if page == "Total Appointment":
             )
             
             slot_target = round(
-                oregon_target / 3
+                oregon_capacity / 3
             )
             
             slot_booked = counts["oregon"]["today"]["1-3"]
@@ -467,7 +476,7 @@ if page == "Total Appointment":
             )
             
             slot_target = round(
-                oregon_target / 3
+                oregon_capacity / 3
             )
             
             slot_booked = counts["oregon"]["today"]["4-6"]
@@ -542,7 +551,7 @@ if page == "Total Appointment":
 
             # Washington Needs Leads
             slot_target = round(
-                washington_target / 3
+                washington_capacity / 3
             )
 
             slot_booked = counts["washington"]["today"]["10-12"]
@@ -556,7 +565,7 @@ if page == "Total Appointment":
             )
 
             slot_target = round(
-                washington_target / 3
+                washington_capacity / 3
             )
 
             slot_booked = counts["washington"]["today"]["1-3"]
@@ -570,7 +579,7 @@ if page == "Total Appointment":
             )
 
             slot_target = round(
-                washington_target / 3
+                washington_capacity / 3
             )
 
             slot_booked = counts["washington"]["today"]["4-6"]
@@ -645,7 +654,7 @@ if page == "Total Appointment":
 
             # California Needs Leads
             slot_target = round(
-                socal_target / 3
+                socal_capacity / 3
             )
 
             slot_booked = counts["socal"]["today"]["10-12"]
@@ -659,7 +668,7 @@ if page == "Total Appointment":
             )
 
             slot_target = round(
-                socal_target / 3
+                socal_capacity / 3
             )
 
             slot_booked = counts["socal"]["today"]["1-3"]
@@ -673,7 +682,7 @@ if page == "Total Appointment":
             )
 
             slot_target = round(
-                socal_target / 3
+                socal_capacity / 3
             )
 
             slot_booked = counts["socal"]["today"]["4-6"]
@@ -964,7 +973,7 @@ if page == "Total Appointment":
             )
 
             slot_target = round(
-                washington_target / 3
+                socal_target / 3
             )
 
             slot_booked = counts["socal"]["tomorrow"]["4-6"]
