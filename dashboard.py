@@ -117,922 +117,215 @@ if page == "End of Day Report":
 
 if page == "Total Appointment":
 
-    st.title("Total Appointment")
+    st.title("📅 Total Appointment")
 
     counts = build_appointment_counts(items)
 
-    st.header("Total Tommy/Elite Reps")
-    
-    c1, c2, c3 = st.columns(3)
-    
-    with c1:
-        st.markdown(
-            "<span style='color:#2563eb;font-weight:bold'>OR Reps</span>",
-            unsafe_allow_html=True
-        )
-        oregon_reps = st.number_input(
-            "OR Reps",
-            min_value=0,
-            value=2,
-            label_visibility="collapsed"
-        )
-    
-    with c2:
-        st.markdown(
-            "<span style='color:#16a34a;font-weight:bold'>WA Reps</span>",
-            unsafe_allow_html=True
-        )
-        washington_reps = st.number_input(
-            "WA Reps",
-            min_value=0,
-            value=2,
-            label_visibility="collapsed"
-        )
-    
-    with c3:
-        st.markdown(
-            "<span style='color:#dc2626;font-weight:bold'>CA Reps</span>",
-            unsafe_allow_html=True
-        )
-        socal_reps = st.number_input(
-            "CA Reps",
-            min_value=0,
-            value=2,
-            label_visibility="collapsed"
-        )
+    STATE_INFO = {
+        "oregon": {"label": "Oregon", "abbr": "OR", "color": "#2563eb", "emoji": "🔵"},
+        "washington": {"label": "Washington", "abbr": "WA", "color": "#16a34a", "emoji": "🟢"},
+        "socal": {"label": "Southern California", "abbr": "CA", "color": "#dc2626", "emoji": "🔴"},
+    }
 
-    st.subheader("Performance")
+    SLOT_LABELS = {
+        "10-12": "10AM–12PM",
+        "1-3": "1PM–3PM",
+        "4-6": "4PM–6PM",
+        "7-8": "7PM–8PM",
+    }
 
-    confirmation_rate = st.number_input(
-        "Confirmation Rate %",
-        min_value=1,
-        max_value=100,
-        value=50
-    )
+    def get_slot_status(booked, target):
+        if booked == 0:
+            return "🔴 Empty"
+        elif booked < target:
+            return "🟡 Needs Leads"
+        elif booked == target:
+            return "🟢 Goal Met"
+        return "🔵 Extra Leads"
+
+    # ------------------------------------------------------------------
+    # SETTINGS — reps per state + confirmation rate
+    # ------------------------------------------------------------------
+    with st.container(border=True):
+
+        st.subheader("⚙️ Settings")
+
+        c1, c2, c3, c4 = st.columns(4)
+
+        with c1:
+            st.markdown(
+                f"<span style='color:{STATE_INFO['oregon']['color']};font-weight:bold'>OR Reps</span>",
+                unsafe_allow_html=True
+            )
+            oregon_reps = st.number_input(
+                "OR Reps", min_value=0, value=2, label_visibility="collapsed"
+            )
+
+        with c2:
+            st.markdown(
+                f"<span style='color:{STATE_INFO['washington']['color']};font-weight:bold'>WA Reps</span>",
+                unsafe_allow_html=True
+            )
+            washington_reps = st.number_input(
+                "WA Reps", min_value=0, value=2, label_visibility="collapsed"
+            )
+
+        with c3:
+            st.markdown(
+                f"<span style='color:{STATE_INFO['socal']['color']};font-weight:bold'>CA Reps</span>",
+                unsafe_allow_html=True
+            )
+            socal_reps = st.number_input(
+                "CA Reps", min_value=0, value=2, label_visibility="collapsed"
+            )
+
+        with c4:
+            st.markdown("**Confirmation Rate %**")
+            confirmation_rate = st.number_input(
+                "Confirmation Rate %",
+                min_value=1, max_value=100, value=50,
+                label_visibility="collapsed"
+            )
+
+        st.caption(
+            f"Confirmation rate only applies to **Tomorrow** — same-day leads are booked "
+            f"hot and treated as 100% confirmed."
+        )
 
     lead_multiplier = 100 / confirmation_rate
 
-    # CAPACITY
+    # Raw booking capacity per rep - no adjustment. Same-day appointments are
+    # booked by the team and are effectively already confirmed (100% show
+    # rate), so today's goals use this raw number directly.
+    capacity = {
+        "oregon": oregon_reps * 3,
+        "washington": washington_reps * 3,
+        "socal": socal_reps * 3,
+    }
 
-    # Raw booking capacity per rep, no adjustment. Today's appointments are
-    # booked same-day by the team and are effectively already confirmed
-    # (100% show rate), so today's goals use this raw number directly.
-    oregon_capacity = oregon_reps * 3
-    washington_capacity = washington_reps * 3
-    socal_capacity = socal_reps * 3
+    reps = {
+        "oregon": oregon_reps,
+        "washington": washington_reps,
+        "socal": socal_reps,
+    }
 
     # Tomorrow's appointments are set in advance, so some won't confirm
     # (no answer, cancel, etc). These targets are inflated by the
     # confirmation rate so hitting them actually yields the raw capacity
     # in confirmed appointments.
-    oregon_target = round(
-        oregon_capacity
-        * lead_multiplier
-    )
-    
-    washington_target = round(
-        washington_capacity
-        * lead_multiplier
-    )
-    
-    socal_target = round(
-        socal_capacity
-        * lead_multiplier
-    )
-    
-    st.subheader("Appointment Reps are able to Book")
+    target = {
+        state: round(cap * lead_multiplier)
+        for state, cap in capacity.items()
+    }
 
-    c1, c2, c3 = st.columns(3)
+    # ------------------------------------------------------------------
+    # HEADLINE METRICS
+    # ------------------------------------------------------------------
+    st.write("")
+    m1, m2, m3 = st.columns(3)
 
-    with c1:
-        st.markdown(
-            "<h4 style='color:#2563eb; margin-bottom:0;'>OR</h4>",
-            unsafe_allow_html=True
-        )
-        st.metric(
-            label=" ",
-            value=oregon_capacity,
-            delta=f"{oregon_reps} reps"
-        )
-    
-    with c2:
-        st.markdown(
-            "<h4 style='color:#16a34a; margin-bottom:0;'>WA</h4>",
-            unsafe_allow_html=True
-        )
-        st.metric(
-            label=" ",
-            value=washington_capacity,
-            delta=f"{washington_reps} reps"
-        )
-    
-    with c3:
-        st.markdown(
-            "<h4 style='color:#dc2626; margin-bottom:0;'>CA</h4>",
-            unsafe_allow_html=True
-        )
-        st.metric(
-            label=" ",
-            value=socal_capacity,
-            delta=f"{socal_reps} reps"
-        )
-    
-    today_or = (
-        counts["oregon"]["today"]["10-12"]
-        + counts["oregon"]["today"]["1-3"]
-        + counts["oregon"]["today"]["4-6"]
-    )
-    
-    today_wa = (
-        counts["washington"]["today"]["10-12"]
-        + counts["washington"]["today"]["1-3"]
-        + counts["washington"]["today"]["4-6"]
-    )
-    
-    today_ca = (
-        counts["socal"]["today"]["10-12"]
-        + counts["socal"]["today"]["1-3"]
-        + counts["socal"]["today"]["4-6"]
-    )
-    
-    today_total = (
-        today_or
-        + today_wa
-        + today_ca
-    )
-    
-    # TOMORROW
-    
-    tomorrow_or = (
-        counts["oregon"]["tomorrow"]["10-12"]
-        + counts["oregon"]["tomorrow"]["1-3"]
-        + counts["oregon"]["tomorrow"]["4-6"]
-    )
-    
-    tomorrow_wa = (
-        counts["washington"]["tomorrow"]["10-12"]
-        + counts["washington"]["tomorrow"]["1-3"]
-        + counts["washington"]["tomorrow"]["4-6"]
-    )
-    
-    tomorrow_ca = (
-        counts["socal"]["tomorrow"]["10-12"]
-        + counts["socal"]["tomorrow"]["1-3"]
-        + counts["socal"]["tomorrow"]["4-6"]
-    )
-    
-    tomorrow_total = (
-        tomorrow_or
-        + tomorrow_wa
-        + tomorrow_ca
-    )
-    
-    # SIDE BY SIDE
-    
-    left_col, right_col = st.columns(2)
-    
-    with left_col:
-
-        st.subheader("Today")
-    
-        c1, c2, c3, c4 = st.columns(4)
-    
-        with c1:
+    for col, state in zip((m1, m2, m3), ("oregon", "washington", "socal")):
+        info = STATE_INFO[state]
+        with col:
             st.markdown(
-                f"""
-                <div style="text-align:center;">
-                    <div style="color:#2563eb;font-weight:bold;font-size:20px;">
-                        OR
-                    </div>
-                    <div style="font-size:36px;font-weight:bold;">
-                        {today_or}
-                    </div>
-                </div>
-                """,
+                f"<h4 style='color:{info['color']}; margin-bottom:0;'>{info['emoji']} {info['abbr']}</h4>",
                 unsafe_allow_html=True
             )
-    
-        with c2:
-            st.markdown(
-                f"""
-                <div style="text-align:center;">
-                    <div style="color:#16a34a;font-weight:bold;font-size:20px;">
-                        WA
-                    </div>
-                    <div style="font-size:36px;font-weight:bold;">
-                        {today_wa}
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
+            st.metric(
+                "Reps Can Book",
+                capacity[state],
+                delta=f"{reps[state]} reps",
+                delta_color="off"
             )
-    
-        with c3:
-            st.markdown(
-                f"""
-                <div style="text-align:center;">
-                    <div style="color:#dc2626;font-weight:bold;font-size:20px;">
-                        CA
-                    </div>
-                    <div style="font-size:36px;font-weight:bold;">
-                        {today_ca}
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-    
-        c4.metric("TOTAL", today_total)
-    
-    with right_col:
-
-        st.subheader("Tomorrow")
-    
-        c1, c2, c3, c4 = st.columns(4)
-    
-        with c1:
-            st.markdown(
-                f"""
-                <div style="text-align:center;">
-                    <div style="color:#2563eb;font-weight:bold;font-size:20px;">
-                        OR
-                    </div>
-                    <div style="font-size:36px;font-weight:bold;">
-                        {tomorrow_or}
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-    
-        with c2:
-            st.markdown(
-                f"""
-                <div style="text-align:center;">
-                    <div style="color:#16a34a;font-weight:bold;font-size:20px;">
-                        WA
-                    </div>
-                    <div style="font-size:36px;font-weight:bold;">
-                        {tomorrow_wa}
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-    
-        with c3:
-            st.markdown(
-                f"""
-                <div style="text-align:center;">
-                    <div style="color:#dc2626;font-weight:bold;font-size:20px;">
-                        CA
-                    </div>
-                    <div style="font-size:36px;font-weight:bold;">
-                        {tomorrow_ca}
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-    
-        c4.metric("TOTAL", tomorrow_total)
 
     st.divider()
 
-    st.info(
-        "🔴 Empty    |    🟡 Needs Leads    |    🟢 Goal Met    |    🔵 Extra Leads"
-    )
-    
-    left_col, right_col = st.columns(2)
+    def total_for(state, day):
+        day_counts = counts[state][day]
+        return day_counts["10-12"] + day_counts["1-3"] + day_counts["4-6"]
 
-    def get_status(booked, capacity):
+    today_total = sum(total_for(s, "today") for s in STATE_INFO)
+    tomorrow_total = sum(total_for(s, "tomorrow") for s in STATE_INFO)
 
-        if booked < (capacity * 0.75):
-            return "🟡 NEED LEADS"
-    
-        elif booked <= capacity:
-            return "🟢 FULL"
-    
-        return "🔴 OVERBOOKED"
+    tt1, tt2 = st.columns(2)
+    tt1.metric("📌 Same Day Appointments Booked", today_total)
+    tt2.metric("📆 Tomorrow Appointments Booked", tomorrow_total)
 
-    def get_slot_status(booked, target):
+    st.divider()
 
-        if booked == 0:
-            return "🔴"
-    
-        elif booked < target:
-            return "🟡"
-    
-        elif booked == target:
-            return "🟢"
-    
-        return "🔵"
-    
-    with left_col:
+    # ------------------------------------------------------------------
+    # RENDER ONE STATE'S SLOT BREAKDOWN
+    # ------------------------------------------------------------------
+    def render_state_block(state, day, slot_target):
 
-        st.subheader("Same Day Appt Needed")
+        info = STATE_INFO[state]
+        day_counts = counts[state][day]
 
-        or_col, wa_col, ca_col = st.columns(3)
+        booked_total = day_counts["10-12"] + day_counts["1-3"] + day_counts["4-6"] + day_counts["7-8"]
+        goal_total = slot_target * 4
 
-        with or_col:
-
-            st.markdown(
-                "<h3 style='color:#2563eb'>OR</h3>",
-                unsafe_allow_html=True
-            )
-
-            # Oregon slots
-            or_today = (
-            counts["oregon"]["today"]["10-12"]
-            + counts["oregon"]["today"]["1-3"]
-            + counts["oregon"]["today"]["4-6"]
+        st.markdown(
+            f"<h4 style='color:{info['color']}; margin-bottom:4px;'>{info['emoji']} {info['label']}</h4>",
+            unsafe_allow_html=True
         )
 
-            # Oregon Needs Leads
-            slot_target = round(
-                oregon_capacity / 3
-            )
-            
-            slot_booked = counts["oregon"]["today"]["10-12"]
-            
-            st.write(
-                f"10AM-12PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-            
-            slot_target = round(
-                oregon_capacity / 3
-            )
-            
-            slot_booked = counts["oregon"]["today"]["1-3"]
+        progress = 0.0 if goal_total == 0 else min(1.0, booked_total / goal_total)
+        st.progress(progress)
+        st.caption(f"{booked_total} / {goal_total} leads booked toward goal")
 
-            st.write(
-                f"1PM-3PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-            
-            slot_target = round(
-                oregon_capacity / 3
-            )
-            
-            slot_booked = counts["oregon"]["today"]["4-6"]
+        slot_cols = st.columns(4)
+        needs = []
 
-            st.write(
-                f"4PM-6PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
+        for col, (slot_key, slot_label) in zip(slot_cols, SLOT_LABELS.items()):
 
-            slot_booked = counts["oregon"]["today"]["7-8"]
+            booked = day_counts[slot_key]
 
-            st.write(
-                f"7PM-8PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
+            with col:
+                st.metric(slot_label, booked, delta=f"Goal {slot_target}", delta_color="off")
+                st.caption(get_slot_status(booked, slot_target))
 
-            needs = []
-
-            missing = max(
-                0,
-                slot_target - counts["oregon"]["today"]["10-12"]
-            )
+            missing = max(0, slot_target - booked)
             if missing:
-                needs.append(f"10AM-12PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["oregon"]["today"]["1-3"]
-            )
-            if missing:
-                needs.append(f"1PM-3PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["oregon"]["today"]["4-6"]
-            )
-            if missing:
-                needs.append(f"4PM-6PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["oregon"]["today"]["7-8"]
-            )
-            if missing:
-                needs.append(f"7PM-8PM → {missing}")
-            
-            if needs:
-                st.warning("**Needs ↓**")
-            
-                for item in needs:
-                    st.write(f"• {item}")
-            
-        with wa_col:
+                needs.append(f"{slot_label} → **{missing} more**")
 
-            st.markdown(
-                "<h3 style='color:#16a34a'>WA</h3>",
-                unsafe_allow_html=True
-            )
+        if needs:
+            st.warning("Needs Leads: " + "  |  ".join(needs))
+        else:
+            st.success("All slots at or above goal ✅")
 
-            # Washington slots
-            wa_today = (
-            counts["washington"]["today"]["10-12"]
-            + counts["washington"]["today"]["1-3"]
-            + counts["washington"]["today"]["4-6"]
+        st.divider()
+
+    # ------------------------------------------------------------------
+    # TABS: SAME DAY vs TOMORROW
+    # ------------------------------------------------------------------
+    tab_today, tab_tomorrow = st.tabs([
+        "📌 Same Day Appt Needed",
+        "📆 Tomorrow"
+    ])
+
+    with tab_today:
+
+        st.caption(
+            "Same-day leads are booked hot by the team and count as 100% "
+            "confirmed — goal is the raw rep capacity, no buffer applied."
         )
 
-            # Washington Needs Leads
-            slot_target = round(
-                washington_capacity / 3
-            )
+        for state in ("oregon", "washington", "socal"):
+            slot_target = round(capacity[state] / 3)
+            render_state_block(state, "today", slot_target)
 
-            slot_booked = counts["washington"]["today"]["10-12"]
+    with tab_tomorrow:
 
-            st.write(
-                f"10AM-12PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_target = round(
-                washington_capacity / 3
-            )
-
-            slot_booked = counts["washington"]["today"]["1-3"]
-
-            st.write(
-                f"1PM-3PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_target = round(
-                washington_capacity / 3
-            )
-
-            slot_booked = counts["washington"]["today"]["4-6"]
-
-            st.write(
-                f"4PM-6PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_booked = counts["washington"]["today"]["7-8"]
-
-            st.write(
-                f"7PM-8PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            needs = []
-
-            missing = max(
-                0,
-                slot_target - counts["washington"]["today"]["10-12"]
-            )
-            if missing:
-                needs.append(f"10AM-12PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["washington"]["today"]["1-3"]
-            )
-            if missing:
-                needs.append(f"1PM-3PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["washington"]["today"]["4-6"]
-            )
-            if missing:
-                needs.append(f"4PM-6PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["washington"]["today"]["7-8"]
-            )
-            if missing:
-                needs.append(f"7PM-8PM → {missing}")
-            
-            if needs:
-                st.warning("**Needs ↓**")
-            
-                for item in needs:
-                    st.write(f"• {item}")
-
-        with ca_col:
-
-            st.markdown(
-                "<h3 style='color:#dc2626'>CA</h3>",
-                unsafe_allow_html=True
-            )
-
-            # California slots
-            ca_today = (
-            counts["socal"]["today"]["10-12"]
-            + counts["socal"]["today"]["1-3"]
-            + counts["socal"]["today"]["4-6"]
+        st.caption(
+            f"Tomorrow's leads aren't guaranteed to confirm, so goals are "
+            f"inflated using the {confirmation_rate}% confirmation rate above "
+            f"to cover no-answers and cancellations."
         )
 
-            # California Needs Leads
-            slot_target = round(
-                socal_capacity / 3
-            )
+        for state in ("oregon", "washington", "socal"):
+            slot_target = round(target[state] / 3)
+            render_state_block(state, "tomorrow", slot_target)
 
-            slot_booked = counts["socal"]["today"]["10-12"]
-
-            st.write(
-                f"10AM-12PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_target = round(
-                socal_capacity / 3
-            )
-
-            slot_booked = counts["socal"]["today"]["1-3"]
-
-            st.write(
-                f"1PM-3PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_target = round(
-                socal_capacity / 3
-            )
-
-            slot_booked = counts["socal"]["today"]["4-6"]
-
-            st.write(
-                f"4PM-6PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_booked = counts["socal"]["today"]["7-8"]
-
-            st.write(
-                f"7PM-8PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            needs = []
-
-            missing = max(
-                0,
-                slot_target - counts["socal"]["today"]["10-12"]
-            )
-            if missing:
-                needs.append(f"10AM-12PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["socal"]["today"]["1-3"]
-            )
-            if missing:
-                needs.append(f"1PM-3PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["socal"]["today"]["4-6"]
-            )
-            if missing:
-                needs.append(f"4PM-6PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["socal"]["today"]["7-8"]
-            )
-            if missing:
-                needs.append(f"7PM-8PM → {missing}")
-            
-            if needs:
-                st.warning("**Needs ↓**")
-            
-                for item in needs:
-                    st.write(f"• {item}")
-    
-    with right_col:
-        
-        st.subheader("Tomorrow")
-
-        or_col, wa_col, ca_col = st.columns(3)
-
-        with or_col:
-
-            st.markdown(
-                "<h3 style='color:#2563eb'>OR</h3>",
-                unsafe_allow_html=True
-            )
-        
-            slot_target = round(
-                oregon_target / 3
-            )
-            
-            slot_booked = counts["oregon"]["tomorrow"]["10-12"]
-
-            st.write(
-                f"10AM-12PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-            
-            slot_target = round(
-                oregon_target / 3
-            )
-            
-            slot_booked = counts["oregon"]["tomorrow"]["1-3"]
-
-            st.write(
-                f"1PM-3PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-            
-            slot_target = round(
-                oregon_target / 3
-            )
-            
-            slot_booked = counts["oregon"]["tomorrow"]["4-6"]
-
-            st.write(
-                f"4PM-6PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_booked = counts["oregon"]["tomorrow"]["7-8"]
-
-            st.write(
-                f"7PM-8PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            needs = []
-
-            missing = max(
-                0,
-                slot_target - counts["oregon"]["tomorrow"]["10-12"]
-            )
-            if missing:
-                needs.append(f"10AM-12PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["oregon"]["tomorrow"]["1-3"]
-            )
-            if missing:
-                needs.append(f"1PM-3PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["oregon"]["tomorrow"]["4-6"]
-            )
-            if missing:
-                needs.append(f"4PM-6PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["oregon"]["tomorrow"]["7-8"]
-            )
-            if missing:
-                needs.append(f"7PM-8PM → {missing}")
-            
-            if needs:
-                st.warning("**Needs ↓**")
-            
-                for item in needs:
-                    st.write(f"• {item}")
-
-        with wa_col:
-
-            st.markdown(
-                "<h3 style='color:#16a34a'>WA</h3>",
-                unsafe_allow_html=True
-            )
-
-            slot_target = round(
-            washington_target / 3
-        )
-
-            slot_booked = counts["washington"]["tomorrow"]["10-12"]
-
-            st.write(
-                f"10AM-12PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_target = round(
-                washington_target / 3
-            )
-
-            slot_booked = counts["washington"]["tomorrow"]["1-3"]
-
-            st.write(
-                f"1PM-3PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_target = round(
-                washington_target / 3
-            )
-
-            slot_booked = counts["washington"]["tomorrow"]["4-6"]
-
-            st.write(
-                f"4PM-6PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_booked = counts["washington"]["tomorrow"]["7-8"]
-
-            st.write(
-                f"7PM-8PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            needs = []
-
-            missing = max(
-                0,
-                slot_target - counts["washington"]["tomorrow"]["10-12"]
-            )
-            if missing:
-                needs.append(f"10AM-12PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["washington"]["tomorrow"]["1-3"]
-            )
-            if missing:
-                needs.append(f"1PM-3PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["washington"]["tomorrow"]["4-6"]
-            )
-            if missing:
-                needs.append(f"4PM-6PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["washington"]["tomorrow"]["7-8"]
-            )
-            if missing:
-                needs.append(f"7PM-8PM → {missing}")
-            
-            if needs:
-                st.warning("**Needs ↓**")
-            
-                for item in needs:
-                    st.write(f"• {item}")    
-
-        with ca_col:
-
-            st.markdown(
-                "<h3 style='color:#dc2626'>CA</h3>",
-                unsafe_allow_html=True
-            )
-
-            slot_target = round(
-                socal_target / 3
-            )
-
-            slot_booked = counts["socal"]["tomorrow"]["10-12"]
-
-            st.write(
-                f"10AM-12PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_target = round(
-                socal_target / 3
-            )
-
-            slot_booked = counts["socal"]["tomorrow"]["1-3"]
-
-            st.write(
-                f"1PM-3PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_target = round(
-                socal_target / 3
-            )
-
-            slot_booked = counts["socal"]["tomorrow"]["4-6"]
-
-            st.write(
-                f"4PM-6PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            slot_booked = counts["socal"]["tomorrow"]["7-8"]
-
-            st.write(
-                f"7PM-8PM {get_slot_status(slot_booked, slot_target)}"
-            )
-            
-            st.caption(
-                f"Leads: {slot_booked} | Goal: {slot_target}"
-            )
-
-            needs = []
-
-            missing = max(
-                0,
-                slot_target - counts["socal"]["tomorrow"]["10-12"]
-            )
-            if missing:
-                needs.append(f"10AM-12PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["socal"]["tomorrow"]["1-3"]
-            )
-            if missing:
-                needs.append(f"1PM-3PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["socal"]["tomorrow"]["4-6"]
-            )
-            if missing:
-                needs.append(f"4PM-6PM → {missing}")
-            
-            missing = max(
-                0,
-                slot_target - counts["socal"]["tomorrow"]["7-8"]
-            )
-            if missing:
-                needs.append(f"7PM-8PM → {missing}")
-            
-            if needs:
-                st.warning("**Needs ↓**")
-            
-                for item in needs:
-                    st.write(f"• {item}")  
 
 def get_column_value(item, column_id):
 
