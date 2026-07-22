@@ -432,6 +432,8 @@ if page == "Total Appointment":
 
         st.subheader("Same Day Appt Needed")
 
+        or_col, wa_col, ca_col = st.columns(3)
+
         with or_col:
 
             st.markdown(
