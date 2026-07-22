@@ -32,7 +32,6 @@ def build_report(items):
         "same_day": 0,
         "tommy": 0,
         "elite": 0,
-        "universal": 0,
         "no_answer": 0,
         "cancelled": 0,
         "reschedule": 0,
@@ -79,9 +78,6 @@ def build_report(items):
 
             elif status == "ELITE":
                 report["elite"] += 1
-
-            elif status == "UNIVERSAL":
-                report["universal"] += 1
 
         elif status == "NO ANSWER":
             report["no_answer"] += 1
