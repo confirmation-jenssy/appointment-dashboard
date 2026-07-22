@@ -29,88 +29,146 @@ page = st.sidebar.selectbox(
 
 if page == "End of Day Report":
 
-    st.title("End of Day Report")
+    st.title("📋 End of Day Report")
 
-    # We use the 'items' variable fetched above
-    with st.container(): # Use a container for better layout structure
+    CLIENT_COLORS = {
+        "tommy": "#2563eb",
+        "elite": "#7c3aed",
+        "universal": "#d97706",
+        "mccormick": "#dc2626",
+        "nova": "#db2777",
+    }
+
+    def confirm_card(label, color, confirmed, confirm_pct):
+        st.markdown(
+            f"<h4 style='color:{color}; margin-bottom:4px;'>{label}</h4>",
+            unsafe_allow_html=True
+        )
+        c1, c2 = st.columns(2)
+        c1.metric("Confirmed", confirmed)
+        c2.metric("Confirm %", f"{confirm_pct}%")
+        st.progress(min(1.0, confirm_pct / 100))
+
+    def breakdown_row(report):
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("No Answer", report["no_answer"])
+        c2.metric("Cancelled", report["cancelled"])
+        c3.metric("Reschedule", report["reschedule"])
+        c4.metric("Rejected", report["rejected"])
+
+    with st.container():
+
         tab1, tab2, tab3, tab4 = st.tabs([
-            "Tommy & Elite EOD",
-            "Universal EOD",
-            "McCormick EOD",
-            "Nova EOD"
+            "Tommy & Elite",
+            "Universal",
+            "McCormick",
+            "Nova"
         ])
 
-        # Only run the reports if items were successfully retrieved
-        if items: 
+        if items:
+
             with tab1:
+
                 report = build_tommy_elite_report(items)
-                c1,c2,c3,c4 = st.columns(4)
-                c1.metric("Confirmed", report["confirmed"])
-                c2.metric("Same Day", report["same_day"])
-                c3.metric("Same Day %", f'{report["same_day_percent"]}%')
-                c4.metric("Confirm %", f'{report["conversion"]}%')
 
-                st.divider()
+                with st.container(border=True):
 
-                c1,c2 = st.columns(2)
-                c1.metric("Tommy", report["tommy"])
-                c2.metric("Elite", report["elite"])
+                    st.markdown(
+                        "<h4 style='margin-bottom:4px;'>Overall</h4>",
+                        unsafe_allow_html=True
+                    )
 
-                st.divider()
+                    c1, c2, c3, c4 = st.columns(4)
+                    c1.metric("Confirmed", report["confirmed"])
+                    c2.metric("Confirm %", f'{report["conversion"]}%')
+                    c3.metric("Same Day", report["same_day"])
+                    c4.metric("Same Day %", f'{report["same_day_percent"]}%')
 
-                c1,c2,c3,c4 = st.columns(4)
-                c1.metric("No Answer", report["no_answer"])
-                c2.metric("Cancelled", report["cancelled"])
-                c3.metric("Reschedule", report["reschedule"])
-                c4.metric("Rejected", report["rejected"])
+                    st.progress(min(1.0, report["conversion"] / 100))
+
+                st.write("")
+
+                c1, c2 = st.columns(2)
+
+                with c1:
+                    with st.container(border=True):
+                        confirm_card(
+                            "Tommy",
+                            CLIENT_COLORS["tommy"],
+                            report["tommy"],
+                            round((report["tommy"] / max(1, report["confirmed"])) * 100, 1)
+                        )
+
+                with c2:
+                    with st.container(border=True):
+                        confirm_card(
+                            "Elite",
+                            CLIENT_COLORS["elite"],
+                            report["elite"],
+                            round((report["elite"] / max(1, report["confirmed"])) * 100, 1)
+                        )
+
+                st.write("")
+
+                with st.container(border=True):
+                    st.markdown("**Not Confirmed**")
+                    breakdown_row(report)
 
             with tab2:
+
                 report = build_universal_report(items)
-            
-                c1, c2 = st.columns(2)
-                c1.metric("Confirmed", report["confirmed"])
-                c2.metric("Confirm %", f'{report["conversion"]}%')
-            
-                st.divider()
-            
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("No Answer", report["no_answer"])
-                c2.metric("Cancelled", report["cancelled"])
-                c3.metric("Reschedule", report["reschedule"])
-                c4.metric("Rejected", report["rejected"])
+
+                with st.container(border=True):
+                    confirm_card(
+                        "Universal",
+                        CLIENT_COLORS["universal"],
+                        report["confirmed"],
+                        report["conversion"]
+                    )
+
+                st.write("")
+
+                with st.container(border=True):
+                    st.markdown("**Not Confirmed**")
+                    breakdown_row(report)
 
             with tab3:
+
                 report = build_mccormick_report(items)
-            
-                c1, c2 = st.columns(2)
-                c1.metric("Confirmed", report["confirmed"])
-                c2.metric("Confirm %", f'{report["conversion"]}%')
-            
-                st.divider()
-            
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("No Answer", report["no_answer"])
-                c2.metric("Cancelled", report["cancelled"])
-                c3.metric("Reschedule", report["reschedule"])
-                c4.metric("Rejected", report["rejected"])
+
+                with st.container(border=True):
+                    confirm_card(
+                        "McCormick",
+                        CLIENT_COLORS["mccormick"],
+                        report["confirmed"],
+                        report["conversion"]
+                    )
+
+                st.write("")
+
+                with st.container(border=True):
+                    st.markdown("**Not Confirmed**")
+                    breakdown_row(report)
 
             with tab4:
+
                 report = build_nova_report(items)
-            
-                c1, c2 = st.columns(2)
-                c1.metric("Confirmed", report["confirmed"])
-                c2.metric("Confirm %", f'{report["conversion"]}%')
-            
-                st.divider()
-            
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("No Answer", report["no_answer"])
-                c2.metric("Cancelled", report["cancelled"])
-                c3.metric("Reschedule", report["reschedule"])
-                c4.metric("Rejected", report["rejected"])
-                
+
+                with st.container(border=True):
+                    confirm_card(
+                        "Nova",
+                        CLIENT_COLORS["nova"],
+                        report["confirmed"],
+                        report["conversion"]
+                    )
+
+                st.write("")
+
+                with st.container(border=True):
+                    st.markdown("**Not Confirmed**")
+                    breakdown_row(report)
+
         else:
-            # Display a message if no data is available for reporting
             col1, col2 = st.columns(2)
             col1.info("Data Unavailable")
             col2.warning("Please check your API keys or board settings.")
