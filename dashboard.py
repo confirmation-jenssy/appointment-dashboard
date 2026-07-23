@@ -148,6 +148,42 @@ if page == "End of Day Report":
                 nova_report = build_nova_report(items)
                 mccormick_report = build_mccormick_report(items)
 
+                # Same pool: Nova + McCormick combined
+                pool_confirmed = nova_report["confirmed"] + mccormick_report["confirmed"]
+                pool_total_leads = nova_report["total_leads"] + mccormick_report["total_leads"]
+                pool_same_day = nova_report["same_day"] + mccormick_report["same_day"]
+
+                pool_conversion = round(
+                    (pool_confirmed / max(1, pool_total_leads)) * 100, 2
+                )
+                pool_same_day_percent = round(
+                    (pool_same_day / max(1, pool_confirmed)) * 100, 2
+                )
+
+                pool_report = {
+                    "no_answer": nova_report["no_answer"] + mccormick_report["no_answer"],
+                    "cancelled": nova_report["cancelled"] + mccormick_report["cancelled"],
+                    "reschedule": nova_report["reschedule"] + mccormick_report["reschedule"],
+                    "rejected": nova_report["rejected"] + mccormick_report["rejected"],
+                }
+
+                with st.container(border=True):
+
+                    st.markdown(
+                        "<h4 style='margin-bottom:4px;'>Overall — Nova & McCormick</h4>",
+                        unsafe_allow_html=True
+                    )
+
+                    c1, c2, c3, c4 = st.columns(4)
+                    c1.metric("Confirmed", pool_confirmed)
+                    c2.metric("Confirm %", f'{pool_conversion}%')
+                    c3.metric("Same Day", pool_same_day)
+                    c4.metric("Same Day %", f'{pool_same_day_percent}%')
+
+                    st.progress(min(1.0, pool_conversion / 100))
+
+                st.write("")
+
                 c1, c2 = st.columns(2)
 
                 with c1:
@@ -156,7 +192,7 @@ if page == "End of Day Report":
                             "Nova",
                             CLIENT_COLORS["nova"],
                             nova_report["confirmed"],
-                            nova_report["conversion"]
+                            round((nova_report["confirmed"] / max(1, pool_confirmed)) * 100, 1)
                         )
 
                 with c2:
@@ -165,18 +201,13 @@ if page == "End of Day Report":
                             "McCormick",
                             CLIENT_COLORS["mccormick"],
                             mccormick_report["confirmed"],
-                            mccormick_report["conversion"]
+                            round((mccormick_report["confirmed"] / max(1, pool_confirmed)) * 100, 1)
                         )
 
                 st.write("")
 
                 with st.container(border=True):
-                    breakdown_row(nova_report, label="Nova")
-
-                st.write("")
-
-                with st.container(border=True):
-                    breakdown_row(mccormick_report, label="McCormick")
+                    breakdown_row(pool_report, label="Nova & McCormick")
 
         else:
             col1, col2 = st.columns(2)
