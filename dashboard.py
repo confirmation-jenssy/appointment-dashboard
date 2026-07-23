@@ -49,7 +49,11 @@ if page == "End of Day Report":
         c2.metric("Confirm %", f"{confirm_pct}%")
         st.progress(min(1.0, confirm_pct / 100))
 
-    def breakdown_row(report):
+    def breakdown_row(report, label=None):
+        if label:
+            st.markdown(f"**Not Confirmed — {label}**")
+        else:
+            st.markdown("**Not Confirmed**")
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("No Answer", report["no_answer"])
         c2.metric("Cancelled", report["cancelled"])
@@ -58,11 +62,9 @@ if page == "End of Day Report":
 
     with st.container():
 
-        tab1, tab2, tab3, tab4 = st.tabs([
-            "Tommy & Elite",
-            "Universal",
-            "McCormick",
-            "Nova"
+        tab1, tab2 = st.tabs([
+            "Tommy, Elite & Universal",
+            "Nova & McCormick"
         ])
 
         if items:
@@ -70,11 +72,12 @@ if page == "End of Day Report":
             with tab1:
 
                 report = build_tommy_elite_report(items)
+                universal_report = build_universal_report(items)
 
                 with st.container(border=True):
 
                     st.markdown(
-                        "<h4 style='margin-bottom:4px;'>Overall</h4>",
+                        "<h4 style='margin-bottom:4px;'>Overall — Tommy & Elite</h4>",
                         unsafe_allow_html=True
                     )
 
@@ -88,7 +91,7 @@ if page == "End of Day Report":
 
                 st.write("")
 
-                c1, c2 = st.columns(2)
+                c1, c2, c3 = st.columns(3)
 
                 with c1:
                     with st.container(border=True):
@@ -108,65 +111,59 @@ if page == "End of Day Report":
                             round((report["elite"] / max(1, report["confirmed"])) * 100, 1)
                         )
 
+                with c3:
+                    with st.container(border=True):
+                        confirm_card(
+                            "Universal",
+                            CLIENT_COLORS["universal"],
+                            universal_report["confirmed"],
+                            universal_report["conversion"]
+                        )
+
                 st.write("")
 
                 with st.container(border=True):
-                    st.markdown("**Not Confirmed**")
-                    breakdown_row(report)
+                    breakdown_row(report, label="Tommy & Elite")
+
+                st.write("")
+
+                with st.container(border=True):
+                    breakdown_row(universal_report, label="Universal")
 
             with tab2:
 
-                report = build_universal_report(items)
+                nova_report = build_nova_report(items)
+                mccormick_report = build_mccormick_report(items)
 
-                with st.container(border=True):
-                    confirm_card(
-                        "Universal",
-                        CLIENT_COLORS["universal"],
-                        report["confirmed"],
-                        report["conversion"]
-                    )
+                c1, c2 = st.columns(2)
 
-                st.write("")
+                with c1:
+                    with st.container(border=True):
+                        confirm_card(
+                            "Nova",
+                            CLIENT_COLORS["nova"],
+                            nova_report["confirmed"],
+                            nova_report["conversion"]
+                        )
 
-                with st.container(border=True):
-                    st.markdown("**Not Confirmed**")
-                    breakdown_row(report)
-
-            with tab3:
-
-                report = build_mccormick_report(items)
-
-                with st.container(border=True):
-                    confirm_card(
-                        "McCormick",
-                        CLIENT_COLORS["mccormick"],
-                        report["confirmed"],
-                        report["conversion"]
-                    )
+                with c2:
+                    with st.container(border=True):
+                        confirm_card(
+                            "McCormick",
+                            CLIENT_COLORS["mccormick"],
+                            mccormick_report["confirmed"],
+                            mccormick_report["conversion"]
+                        )
 
                 st.write("")
 
                 with st.container(border=True):
-                    st.markdown("**Not Confirmed**")
-                    breakdown_row(report)
-
-            with tab4:
-
-                report = build_nova_report(items)
-
-                with st.container(border=True):
-                    confirm_card(
-                        "Nova",
-                        CLIENT_COLORS["nova"],
-                        report["confirmed"],
-                        report["conversion"]
-                    )
+                    breakdown_row(nova_report, label="Nova")
 
                 st.write("")
 
                 with st.container(border=True):
-                    st.markdown("**Not Confirmed**")
-                    breakdown_row(report)
+                    breakdown_row(mccormick_report, label="McCormick")
 
         else:
             col1, col2 = st.columns(2)
