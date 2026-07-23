@@ -44,9 +44,8 @@ if page == "End of Day Report":
             f"<h4 style='color:{color}; margin-bottom:4px;'>{label}</h4>",
             unsafe_allow_html=True
         )
-        c1, c2 = st.columns(2)
-        c1.metric("Confirmed", confirmed)
-        c2.metric("Confirm %", f"{confirm_pct}%")
+        st.metric("Confirmed", confirmed)
+        st.metric("Confirm %", f"{confirm_pct}%")
         st.progress(min(1.0, confirm_pct / 100))
 
     def breakdown_row(report, label=None):
@@ -74,20 +73,39 @@ if page == "End of Day Report":
                 report = build_tommy_elite_report(items)
                 universal_report = build_universal_report(items)
 
+                # Same pool: Tommy + Elite + Universal combined
+                pool_confirmed = report["confirmed"] + universal_report["confirmed"]
+                pool_total_leads = report["total_leads"] + universal_report["total_leads"]
+                pool_same_day = report["same_day"] + universal_report["same_day"]
+
+                pool_conversion = round(
+                    (pool_confirmed / max(1, pool_total_leads)) * 100, 2
+                )
+                pool_same_day_percent = round(
+                    (pool_same_day / max(1, pool_confirmed)) * 100, 2
+                )
+
+                pool_report = {
+                    "no_answer": report["no_answer"] + universal_report["no_answer"],
+                    "cancelled": report["cancelled"] + universal_report["cancelled"],
+                    "reschedule": report["reschedule"] + universal_report["reschedule"],
+                    "rejected": report["rejected"] + universal_report["rejected"],
+                }
+
                 with st.container(border=True):
 
                     st.markdown(
-                        "<h4 style='margin-bottom:4px;'>Overall — Tommy & Elite</h4>",
+                        "<h4 style='margin-bottom:4px;'>Overall — Tommy, Elite & Universal</h4>",
                         unsafe_allow_html=True
                     )
 
                     c1, c2, c3, c4 = st.columns(4)
-                    c1.metric("Confirmed", report["confirmed"])
-                    c2.metric("Confirm %", f'{report["conversion"]}%')
-                    c3.metric("Same Day", report["same_day"])
-                    c4.metric("Same Day %", f'{report["same_day_percent"]}%')
+                    c1.metric("Confirmed", pool_confirmed)
+                    c2.metric("Confirm %", f'{pool_conversion}%')
+                    c3.metric("Same Day", pool_same_day)
+                    c4.metric("Same Day %", f'{pool_same_day_percent}%')
 
-                    st.progress(min(1.0, report["conversion"] / 100))
+                    st.progress(min(1.0, pool_conversion / 100))
 
                 st.write("")
 
@@ -99,7 +117,7 @@ if page == "End of Day Report":
                             "Tommy",
                             CLIENT_COLORS["tommy"],
                             report["tommy"],
-                            round((report["tommy"] / max(1, report["confirmed"])) * 100, 1)
+                            round((report["tommy"] / max(1, pool_confirmed)) * 100, 1)
                         )
 
                 with c2:
@@ -108,7 +126,7 @@ if page == "End of Day Report":
                             "Elite",
                             CLIENT_COLORS["elite"],
                             report["elite"],
-                            round((report["elite"] / max(1, report["confirmed"])) * 100, 1)
+                            round((report["elite"] / max(1, pool_confirmed)) * 100, 1)
                         )
 
                 with c3:
@@ -117,18 +135,13 @@ if page == "End of Day Report":
                             "Universal",
                             CLIENT_COLORS["universal"],
                             universal_report["confirmed"],
-                            universal_report["conversion"]
+                            round((universal_report["confirmed"] / max(1, pool_confirmed)) * 100, 1)
                         )
 
                 st.write("")
 
                 with st.container(border=True):
-                    breakdown_row(report, label="Tommy & Elite")
-
-                st.write("")
-
-                with st.container(border=True):
-                    breakdown_row(universal_report, label="Universal")
+                    breakdown_row(pool_report, label="Tommy, Elite & Universal")
 
             with tab2:
 
