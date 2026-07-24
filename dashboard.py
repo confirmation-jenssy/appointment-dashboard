@@ -17,15 +17,34 @@ from reporting import (
     build_appointment_counts
 )
 # --- CHANGE HERE: Fetch data when needed (and rely on the caching in monday_api.py) ---
-items = get_monday_items() 
+items = get_monday_items()
 
-page = st.sidebar.selectbox(
-    "Select Page",
-    [
-        "End of Day Report",
-        "Total Appointment"
-    ]
-)
+if "page" not in st.session_state:
+    st.session_state.page = "End of Day Report"
+
+nav_col1, nav_col2 = st.columns(2)
+
+with nav_col1:
+    if st.button(
+        "📋 End of Day Report",
+        use_container_width=True,
+        type="primary" if st.session_state.page == "End of Day Report" else "secondary"
+    ):
+        st.session_state.page = "End of Day Report"
+        st.rerun()
+
+with nav_col2:
+    if st.button(
+        "📅 Total Appointment",
+        use_container_width=True,
+        type="primary" if st.session_state.page == "Total Appointment" else "secondary"
+    ):
+        st.session_state.page = "Total Appointment"
+        st.rerun()
+
+page = st.session_state.page
+
+st.divider()
 
 if st.sidebar.button("🔄 Refresh Data"):
     get_monday_items.clear()
