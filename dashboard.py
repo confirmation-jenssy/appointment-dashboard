@@ -20,6 +20,9 @@ st.markdown(
         font-weight: 600;
         letter-spacing: 0.5px;
     }
+    h1 {
+        text-align: center;
+    }
     </style>
     """,
     unsafe_allow_html=True
