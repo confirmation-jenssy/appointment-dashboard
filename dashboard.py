@@ -14,7 +14,12 @@ st.markdown(
     <style>
     [data-testid="stSidebar"] {display: none;}
     [data-testid="collapsedControl"] {display: none;}
-    div[data-testid="stDateInput"] input {text-align: center;}
+    div[data-testid="stDateInput"] input {
+        text-align: center;
+        font-size: 1.15rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -74,39 +79,46 @@ if page == "End of Day Report":
     if "eod_date" not in st.session_state:
         st.session_state.eod_date = today_default
 
-    nav_prev, nav_date, nav_next = st.columns([1, 4, 1])
+    with st.container(border=True):
 
-    with nav_prev:
-        if st.button("◀", use_container_width=True):
-            st.session_state.eod_date -= timedelta(days=1)
-            st.rerun()
+        nav_prev, nav_date, nav_next = st.columns([1, 4, 1], vertical_alignment="center")
 
-    with nav_next:
-        if st.button(
-            "▶",
-            use_container_width=True,
-            disabled=(st.session_state.eod_date >= today_default)
-        ):
-            st.session_state.eod_date += timedelta(days=1)
-            st.rerun()
+        with nav_prev:
+            if st.button("◀", use_container_width=True):
+                st.session_state.eod_date -= timedelta(days=1)
+                st.rerun()
 
-    with nav_date:
-        picked_date = st.date_input(
-            "Report Date",
-            value=st.session_state.eod_date,
-            max_value=today_default,
-            label_visibility="collapsed"
+        with nav_next:
+            if st.button(
+                "▶",
+                use_container_width=True,
+                disabled=(st.session_state.eod_date >= today_default)
+            ):
+                st.session_state.eod_date += timedelta(days=1)
+                st.rerun()
+
+        with nav_date:
+            picked_date = st.date_input(
+                "Report Date",
+                value=st.session_state.eod_date,
+                max_value=today_default,
+                label_visibility="collapsed"
+            )
+            if picked_date != st.session_state.eod_date:
+                st.session_state.eod_date = picked_date
+                st.rerun()
+
+        selected_date = st.session_state.eod_date
+
+        badge = "🟢 Today" if selected_date == today_default else "📅 Past Report"
+
+        st.markdown(
+            f"<p style='text-align:center; color:#9ca3af; letter-spacing:0.5px; margin-top:6px;'>"
+            f"<span style='background:rgba(255,255,255,0.08); padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:600;'>{badge}</span>"
+            f"<br><span style='font-size:1.05rem; margin-top:6px; display:inline-block;'>{selected_date.strftime('%A, %B %d, %Y')}</span>"
+            f"</p>",
+            unsafe_allow_html=True
         )
-        if picked_date != st.session_state.eod_date:
-            st.session_state.eod_date = picked_date
-            st.rerun()
-
-    selected_date = st.session_state.eod_date
-
-    if selected_date == today_default:
-        st.markdown(f"<p style='text-align:center; color:gray;'>Today — {selected_date.strftime('%A, %B %d, %Y')}</p>", unsafe_allow_html=True)
-    else:
-        st.markdown(f"<p style='text-align:center; color:gray;'>{selected_date.strftime('%A, %B %d, %Y')}</p>", unsafe_allow_html=True)
 
     if selected_date == today_default:
         report_items = get_monday_items()
