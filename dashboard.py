@@ -7,7 +7,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import requests
 
-from monday_api import BOARD_ID, get_monday_items
+from monday_api import BOARD_ID, get_monday_items, get_report_items
 
 from reporting import (
     build_tommy_elite_report,
@@ -30,6 +30,19 @@ page = st.sidebar.selectbox(
 if page == "End of Day Report":
 
     st.title("📋 End of Day Report")
+
+    today_default = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+
+    selected_date = st.date_input(
+        "Report Date",
+        value=today_default,
+        max_value=today_default
+    )
+
+    if selected_date == today_default:
+        report_items = get_monday_items()
+    else:
+        report_items = get_report_items(selected_date)
 
     CLIENT_COLORS = {
         "tommy": "#2563eb",
@@ -66,12 +79,12 @@ if page == "End of Day Report":
             "Nova & McCormick"
         ])
 
-        if items:
+        if report_items:
 
             with tab1:
 
-                report = build_tommy_elite_report(items)
-                universal_report = build_universal_report(items)
+                report = build_tommy_elite_report(report_items, selected_date)
+                universal_report = build_universal_report(report_items, selected_date)
 
                 # Same pool: Tommy + Elite + Universal combined
                 pool_confirmed = report["confirmed"] + universal_report["confirmed"]
@@ -145,8 +158,8 @@ if page == "End of Day Report":
 
             with tab2:
 
-                nova_report = build_nova_report(items)
-                mccormick_report = build_mccormick_report(items)
+                nova_report = build_nova_report(report_items, selected_date)
+                mccormick_report = build_mccormick_report(report_items, selected_date)
 
                 # Same pool: Nova + McCormick combined
                 pool_confirmed = nova_report["confirmed"] + mccormick_report["confirmed"]
@@ -210,9 +223,7 @@ if page == "End of Day Report":
                     breakdown_row(pool_report, label="Nova & McCormick")
 
         else:
-            col1, col2 = st.columns(2)
-            col1.info("Data Unavailable")
-            col2.warning("Please check your API keys or board settings.")
+            st.info(f"No leads found for {selected_date.strftime('%m/%d/%Y')}.")
 
 if page == "Total Appointment":
 
