@@ -14,6 +14,7 @@ st.markdown(
     <style>
     [data-testid="stSidebar"] {display: none;}
     [data-testid="collapsedControl"] {display: none;}
+    div[data-testid="stDateInput"] input {text-align: center;}
     </style>
     """,
     unsafe_allow_html=True
