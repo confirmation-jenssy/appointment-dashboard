@@ -109,14 +109,19 @@ if page == "End of Day Report":
                 st.rerun()
 
         selected_date = st.session_state.eod_date
+        is_today = selected_date == today_default
 
-        badge = "🟢 Today" if selected_date == today_default else "📅 Past Report"
+        badge_text = "🟢 Today" if is_today else "🕓 Past Report"
+        badge_bg = "rgba(34,197,94,0.15)" if is_today else "rgba(245,158,11,0.15)"
+        badge_color = "#22c55e" if is_today else "#f59e0b"
 
         st.markdown(
-            f"<p style='text-align:center; color:#9ca3af; letter-spacing:0.5px; margin-top:6px;'>"
-            f"<span style='background:rgba(255,255,255,0.08); padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:600;'>{badge}</span>"
-            f"<br><span style='font-size:1.05rem; margin-top:6px; display:inline-block;'>{selected_date.strftime('%A, %B %d, %Y')}</span>"
-            f"</p>",
+            f"<div style='text-align:center; margin-top:10px;'>"
+            f"<span style='background:{badge_bg}; color:{badge_color}; padding:4px 14px; "
+            f"border-radius:999px; font-size:0.75rem; font-weight:700; letter-spacing:0.5px;'>{badge_text}</span>"
+            f"<div style='font-size:1.4rem; font-weight:600; margin-top:10px; color:#e5e7eb;'>"
+            f"{selected_date.strftime('%A, %B %d, %Y')}</div>"
+            f"</div>",
             unsafe_allow_html=True
         )
 
