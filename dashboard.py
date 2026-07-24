@@ -27,6 +27,11 @@ page = st.sidebar.selectbox(
     ]
 )
 
+if st.sidebar.button("🔄 Refresh Data"):
+    get_monday_items.clear()
+    get_report_items.clear()
+    st.rerun()
+
 if page == "End of Day Report":
 
     st.title("📋 End of Day Report")
@@ -43,6 +48,8 @@ if page == "End of Day Report":
         report_items = get_monday_items()
     else:
         report_items = get_report_items(selected_date)
+
+    st.caption(f"{len(report_items)} item(s) fetched from Monday.com for {selected_date.strftime('%m/%d/%Y')}.")
 
     CLIENT_COLORS = {
         "tommy": "#2563eb",
