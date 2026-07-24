@@ -96,8 +96,8 @@ def get_report_items(selected_date):
                     rules: [
                         {{
                             column_id: "date_mkr2q53p",
-                            compare_value: ["{date_str}"],
-                            operator: any_of
+                            compare_value: ["{date_str}", "{date_str}"],
+                            operator: between
                         }}
                     ]
                 }}
