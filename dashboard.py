@@ -43,7 +43,7 @@ items = get_monday_items()
 if "page" not in st.session_state:
     st.session_state.page = "End of Day Report"
 
-nav_col1, nav_col2, nav_col3 = st.columns([2, 2, 1])
+nav_col1, nav_col2, nav_col3, nav_col4 = st.columns([2, 2, 2, 1])
 
 with nav_col1:
     if st.button(
@@ -64,6 +64,15 @@ with nav_col2:
         st.rerun()
 
 with nav_col3:
+    if st.button(
+        "🗂️ Record History",
+        use_container_width=True,
+        type="primary" if st.session_state.page == "Record History" else "secondary"
+    ):
+        st.session_state.page = "Record History"
+        st.rerun()
+
+with nav_col4:
     if st.button("🔄 Refresh Data", use_container_width=True):
         get_monday_items.clear()
         get_report_items.clear()
@@ -318,7 +327,14 @@ if page == "Total Appointment":
 
     st.title("📅 Total Appointment")
 
-    counts = build_appointment_counts(items)
+    today_real = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+
+    default_future = today_real + timedelta(days=2 if today_real.weekday() == 4 else 1)
+
+    if "appt_future_date" not in st.session_state:
+        st.session_state.appt_future_date = default_future
+
+    counts = build_appointment_counts(items, future_date=st.session_state.appt_future_date)
 
     STATE_INFO = {
         "oregon": {"label": "Oregon", "abbr": "OR", "color": "#2563eb", "emoji": "🔵"},
@@ -448,7 +464,9 @@ if page == "Total Appointment":
 
     tt1, tt2 = st.columns(2)
     tt1.metric("📌 Same Day Appointments Booked", today_total)
-    tt2.metric("📆 Tomorrow Appointments Booked", tomorrow_total)
+    future_label_date = st.session_state.appt_future_date
+    future_label = "Tomorrow" if future_label_date == default_future else future_label_date.strftime("%b %d")
+    tt2.metric(f"📆 {future_label} Appointments Booked", tomorrow_total)
 
     st.divider()
 
@@ -495,11 +513,11 @@ if page == "Total Appointment":
         st.divider()
 
     # ------------------------------------------------------------------
-    # TABS: SAME DAY vs TOMORROW
+    # TABS: SAME DAY vs FUTURE (navigable)
     # ------------------------------------------------------------------
-    tab_today, tab_tomorrow = st.tabs([
+    tab_today, tab_future = st.tabs([
         "📌 Same Day Appt Needed",
-        "📆 Tomorrow"
+        "📆 Future Appointments"
     ])
 
     with tab_today:
@@ -513,10 +531,41 @@ if page == "Total Appointment":
             slot_target = round(capacity[state] / 3)
             render_state_block(state, "today", slot_target)
 
-    with tab_tomorrow:
+    with tab_future:
+
+        nav_prev, nav_date, nav_next = st.columns([1, 3, 1], vertical_alignment="center")
+
+        with nav_prev:
+            if st.button("◀", use_container_width=True, key="appt_prev"):
+                st.session_state.appt_future_date -= timedelta(days=1)
+                st.rerun()
+
+        with nav_next:
+            if st.button("▶", use_container_width=True, key="appt_next"):
+                st.session_state.appt_future_date += timedelta(days=1)
+                st.rerun()
+
+        with nav_date:
+            picked = st.date_input(
+                "Future Date",
+                value=st.session_state.appt_future_date,
+                min_value=today_real + timedelta(days=1),
+                label_visibility="collapsed",
+                key="appt_date_picker"
+            )
+            if picked != st.session_state.appt_future_date:
+                st.session_state.appt_future_date = picked
+                st.rerun()
+
+        future_date = st.session_state.appt_future_date
+
+        st.markdown(
+            f"<p style='text-align:center; color:gray; margin-top:4px;'>{future_date.strftime('%A, %B %d, %Y')}</p>",
+            unsafe_allow_html=True
+        )
 
         st.caption(
-            f"Tomorrow's leads aren't guaranteed to confirm, so goals are "
+            f"Future leads aren't guaranteed to confirm, so goals are "
             f"inflated using the {confirmation_rate}% confirmation rate above "
             f"to cover no-answers and cancellations."
         )
@@ -526,11 +575,77 @@ if page == "Total Appointment":
             render_state_block(state, "tomorrow", slot_target)
 
 
-def get_column_value(item, column_id):
+if page == "Record History":
 
-    for col in item["column_values"]:
+    st.title("🗂️ Record History")
 
-        if col["id"] == column_id:
-            return col.get("text", "")
+    today_hist = datetime.now(ZoneInfo("America/Los_Angeles")).date()
 
-    return ""
+    hc1, hc2 = st.columns(2)
+
+    with hc1:
+        history_start = st.date_input(
+            "From",
+            value=today_hist - timedelta(days=6),
+            max_value=today_hist
+        )
+
+    with hc2:
+        history_end = st.date_input(
+            "To",
+            value=today_hist,
+            max_value=today_hist
+        )
+
+    if history_start > history_end:
+        st.warning("'From' date is after 'To' date - showing nothing.")
+        history_dates = []
+    else:
+        span_days = (history_end - history_start).days
+        if span_days > 60:
+            st.warning("That's a big range - showing the most recent 60 days of it to keep things fast.")
+            history_start = history_end - timedelta(days=60)
+        history_dates = [
+            history_end - timedelta(days=i)
+            for i in range((history_end - history_start).days + 1)
+        ]
+
+    rows = []
+
+    for d in history_dates:
+
+        day_items = get_monday_items() if d == today_hist else get_report_items(d)
+
+        te_report = build_tommy_elite_report(day_items, d)
+        uni_report = build_universal_report(day_items, d)
+        nova_report = build_nova_report(day_items, d)
+        mcc_report = build_mccormick_report(day_items, d)
+
+        teu_confirmed = te_report["confirmed"] + uni_report["confirmed"]
+        teu_total = te_report["total_leads"] + uni_report["total_leads"]
+        teu_pct = round((teu_confirmed / max(1, teu_total)) * 100, 1)
+
+        nm_confirmed = nova_report["confirmed"] + mcc_report["confirmed"]
+        nm_total = nova_report["total_leads"] + mcc_report["total_leads"]
+        nm_pct = round((nm_confirmed / max(1, nm_total)) * 100, 1)
+
+        rows.append({
+            "Date": d.strftime("%m/%d/%Y (%a)"),
+            "Tommy/Elite/Universal Confirmed": teu_confirmed,
+            "TEU Confirm %": f"{teu_pct}%",
+            "Same Day": te_report["same_day"],
+            "Nova/McCormick Confirmed": nm_confirmed,
+            "NM Confirm %": f"{nm_pct}%",
+        })
+
+    if rows:
+        st.dataframe(rows, use_container_width=True, hide_index=True)
+
+        total_teu = sum(r["Tommy/Elite/Universal Confirmed"] for r in rows)
+        total_nm = sum(r["Nova/McCormick Confirmed"] for r in rows)
+
+        sc1, sc2 = st.columns(2)
+        sc1.metric("Total Tommy/Elite/Universal Confirmed", total_teu)
+        sc2.metric("Total Nova/McCormick Confirmed", total_nm)
+    else:
+        st.info("No dates selected.")
