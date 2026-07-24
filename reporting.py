@@ -233,10 +233,16 @@ def add_time_bucket(bucket, hour):
         bucket["7-8"] += 1
 
 
-def build_appointment_counts(items):
+def build_appointment_counts(items, future_date=None):
 
     today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
-    tomorrow = today + timedelta(days=1)
+
+    if future_date is not None:
+        tomorrow = future_date
+    elif today.weekday() == 4:  # Friday - skip Saturday, go to Sunday
+        tomorrow = today + timedelta(days=2)
+    else:
+        tomorrow = today + timedelta(days=1)
 
     counts = {
         "oregon": create_campaign_counts(),
