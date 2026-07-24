@@ -3,7 +3,7 @@
 # ==============================
 
 import streamlit as st
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import requests
 
@@ -38,18 +38,47 @@ if page == "End of Day Report":
 
     today_default = datetime.now(ZoneInfo("America/Los_Angeles")).date()
 
-    selected_date = st.date_input(
-        "Report Date",
-        value=today_default,
-        max_value=today_default
-    )
+    if "eod_date" not in st.session_state:
+        st.session_state.eod_date = today_default
+
+    nav_prev, nav_date, nav_next = st.columns([1, 4, 1])
+
+    with nav_prev:
+        if st.button("◀", use_container_width=True):
+            st.session_state.eod_date -= timedelta(days=1)
+            st.rerun()
+
+    with nav_next:
+        if st.button(
+            "▶",
+            use_container_width=True,
+            disabled=(st.session_state.eod_date >= today_default)
+        ):
+            st.session_state.eod_date += timedelta(days=1)
+            st.rerun()
+
+    with nav_date:
+        picked_date = st.date_input(
+            "Report Date",
+            value=st.session_state.eod_date,
+            max_value=today_default,
+            label_visibility="collapsed"
+        )
+        if picked_date != st.session_state.eod_date:
+            st.session_state.eod_date = picked_date
+            st.rerun()
+
+    selected_date = st.session_state.eod_date
+
+    if selected_date == today_default:
+        st.markdown(f"<p style='text-align:center; color:gray;'>Today — {selected_date.strftime('%A, %B %d, %Y')}</p>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<p style='text-align:center; color:gray;'>{selected_date.strftime('%A, %B %d, %Y')}</p>", unsafe_allow_html=True)
 
     if selected_date == today_default:
         report_items = get_monday_items()
     else:
         report_items = get_report_items(selected_date)
-
-    st.caption(f"{len(report_items)} item(s) fetched from Monday.com for {selected_date.strftime('%m/%d/%Y')}.")
 
     CLIENT_COLORS = {
         "tommy": "#2563eb",
