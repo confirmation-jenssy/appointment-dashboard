@@ -25,7 +25,7 @@ def parse_meeting_date(date_string):
     return None
 
 
-def build_report(items):
+def build_report(items, target_date=None):
 
     report = {
         "confirmed": 0,
@@ -42,7 +42,8 @@ def build_report(items):
         "total_leads": 0,
     }
 
-    today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+    if target_date is None:
+        target_date = datetime.now(ZoneInfo("America/Los_Angeles")).date()
 
     for item in items:
 
@@ -58,8 +59,8 @@ def build_report(items):
             # This item could not be dated, skip it safely.
             continue
 
-        # Check if the date part matches today's date
-        if dt.date() != today:
+        # Check if the date part matches the target date
+        if dt.date() != target_date:
             continue
 
         raw_status = values.get(COLUMN_IDS["status"], "")
@@ -122,23 +123,23 @@ def build_report(items):
     return report
 
 
-def build_tommy_elite_report(items):
-    return build_report(items)
+def build_tommy_elite_report(items, target_date=None):
+    return build_report(items, target_date)
 
 
-def build_universal_report(items):
-    return build_disburse_report(items, "UNIVERSAL")
+def build_universal_report(items, target_date=None):
+    return build_disburse_report(items, "UNIVERSAL", target_date)
 
 
-def build_mccormick_report(items):
-    return build_disburse_report(items, "MCCORMICK")
+def build_mccormick_report(items, target_date=None):
+    return build_disburse_report(items, "MCCORMICK", target_date)
 
 
-def build_nova_report(items):
-    return build_disburse_report(items, "NOVA")
+def build_nova_report(items, target_date=None):
+    return build_disburse_report(items, "NOVA", target_date)
 
 
-def build_disburse_report(items, client_name):
+def build_disburse_report(items, client_name, target_date=None):
 
     report = {
         "confirmed": 0,
@@ -151,7 +152,8 @@ def build_disburse_report(items, client_name):
         "conversion": 0,
     }
 
-    today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+    if target_date is None:
+        target_date = datetime.now(ZoneInfo("America/Los_Angeles")).date()
 
     for item in items:
 
@@ -172,7 +174,7 @@ def build_disburse_report(items, client_name):
         if dt is None:
             continue
 
-        if dt.date() != today:
+        if dt.date() != target_date:
             continue
 
         result = values.get(COLUMN_IDS["same_day"], "").upper().strip()
