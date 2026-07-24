@@ -7,6 +7,18 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import requests
 
+st.set_page_config(page_title="Outsource Engage Dashboard", layout="wide", initial_sidebar_state="collapsed")
+
+st.markdown(
+    """
+    <style>
+    [data-testid="stSidebar"] {display: none;}
+    [data-testid="collapsedControl"] {display: none;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 from monday_api import BOARD_ID, get_monday_items, get_report_items
 
 from reporting import (
@@ -22,7 +34,7 @@ items = get_monday_items()
 if "page" not in st.session_state:
     st.session_state.page = "End of Day Report"
 
-nav_col1, nav_col2 = st.columns(2)
+nav_col1, nav_col2, nav_col3 = st.columns([2, 2, 1])
 
 with nav_col1:
     if st.button(
@@ -42,14 +54,15 @@ with nav_col2:
         st.session_state.page = "Total Appointment"
         st.rerun()
 
+with nav_col3:
+    if st.button("🔄 Refresh Data", use_container_width=True):
+        get_monday_items.clear()
+        get_report_items.clear()
+        st.rerun()
+
 page = st.session_state.page
 
 st.divider()
-
-if st.sidebar.button("🔄 Refresh Data"):
-    get_monday_items.clear()
-    get_report_items.clear()
-    st.rerun()
 
 if page == "End of Day Report":
 
